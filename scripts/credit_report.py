@@ -17,7 +17,7 @@ from pathlib import Path
 LOG = Path(__file__).resolve().parent.parent / "docs" / "credit-log.md"
 
 # --- Update these two together, from https://elevenlabs.io/app/usage --------
-REMAINING = 108_208
+REMAINING = 96_332
 AS_OF = date(2026, 8, 25)
 # ---------------------------------------------------------------------------
 
