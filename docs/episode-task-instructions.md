@@ -55,13 +55,13 @@ most, so do not let the news crowd it out.
 
 STEP 5 — SCRIPT. Write a natural two-host conversation.
 
-  HARD BUDGET: the finished spoken script must not exceed 5,800 CHARACTERS
+  HARD BUDGET: the finished spoken script must not exceed 5,000 CHARACTERS
   including spaces. Count the characters before generating any audio, and cut
   the script down if it is over. This is a spending limit, not a style note:
-  ElevenLabs charges 1 credit per character, and the monthly allowance only
-  covers about 5,900 characters per episode across a full month of weekdays.
-  Going over means the show runs out of credit before month end.
-  That budget produces roughly 6 to 7 minutes of audio.
+  ElevenLabs charges 1 credit per character, so the script length IS the bill.
+  5,000 characters x 21.7 episodes is what the remaining allowance covers for
+  a full month. Going over means the show runs dry before month end.
+  That budget produces roughly 5 and a half minutes of audio.
 
 Within that budget, aim for roughly 45 to 55 alternating turns:
   - LAYLA — anchors the episode, drives the running order, asks the questions
@@ -92,9 +92,14 @@ exactly:
 publishes the episode — an automation picks it up from that folder, so do not
 edit feed.xml, episodes.json or the episodes/ folder yourself.
 
-STEP 8 — RECORD THE PRODUCT. In the same commit, append one line to
-docs/products-covered.md:
-    - Ep. NN (YYYY-MM-DD) — <product name>: <one-line description>
+STEP 8 — RECORD THE PRODUCT AND THE SPEND. In the same commit:
+  (a) Append one line to docs/products-covered.md:
+      - Ep. NN (YYYY-MM-DD) — <product name>: <one-line description>
+  (b) Append one line to docs/credit-log.md with the exact character count of
+      the script you sent to ElevenLabs:
+      | NN | YYYY-MM-DD | <characters> | <audio length m:ss> |
+      Be accurate here — this log is the only record of what the show spends,
+      and it is what stops it running out of credit unnoticed.
 
 STEP 9 — REPORT. Reply with the episode number, its length, the three main
 stories covered, and the product explained. Include the show notes as text so
