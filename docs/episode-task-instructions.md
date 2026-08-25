@@ -1,37 +1,40 @@
 # Fintech Pulse — episode task
 
-Paste the block below into a **new** claude.ai scheduled task (leave the
-existing dashboard task alone).
+Paste the block below into the claude.ai scheduled task **Fintech Pulse —
+daily episode** (leave the dashboard task alone).
 
 - **Frequency:** Daily · 07:15 AM — *not* "Weekdays", which means Mon–Fri.
   The Sunday–Thursday rule is enforced inside the instructions instead.
-- **Connectors:** the GitHub connector must be authorised, with access to
-  `sforaihey/fintech-pulse`. Without it the episode cannot reach the feed.
-- **Permissions:** "Automatically approve" is required for an unattended run.
+- **Permissions:** Automatically approve.
+- **Connectors:** **GitHub** must be switched on *for this task*. Connectors
+  are enabled per conversation on claude.ai, so an account-level connection is
+  not enough — open the task and enable GitHub on it.
 
-Committing to `incoming/` triggers `.github/workflows/build-feed.yml`, which
-tags the audio, adds it to `feed.xml` and clears the folder. Nothing on the
-Mac is involved.
+Reads use the repo's public raw URLs (no permissions needed); only the final
+commit uses the connector. If GitHub cannot be enabled on the task, see
+`docs/delivery.md` for the Notion fallback.
 
 ---
 
 ```
 Produce today's episode of "Fintech Pulse Daily", a two-host audio briefing,
-and publish it to the podcast feed.
+and deliver it for publishing.
 
 STEP 0 — DAY CHECK. Work out today's day of the week in Riyadh (UTC+3). If it
 is Friday or Saturday, STOP NOW and produce nothing at all: this show runs
-Sunday to Thursday only. Do not generate audio, do not commit anything.
+Sunday to Thursday only. Do not generate audio, do not upload anything.
 
-STEP 1 — EPISODE NUMBER. Read episodes.json from the GitHub repository
-sforaihey/fintech-pulse (branch main). Take the highest episode number in it
-and add 1. That is today's episode number, written with two digits (e.g. 03).
-If the file cannot be read, STOP and report the failure rather than guessing a
-number — a duplicate number overwrites an existing episode.
+STEP 1 — EPISODE NUMBER. Fetch this URL:
+    https://raw.githubusercontent.com/sforaihey/fintech-pulse/main/episodes.json
+Take the highest episode number in it and add 1. That is today's episode
+number, written with two digits (e.g. 03). If the file cannot be read, STOP
+and report the failure rather than guessing — a duplicate number overwrites an
+existing episode.
 
-STEP 2 — WHAT ALREADY GOT COVERED. Read docs/products-covered.md from the same
-repository. It lists the fintech products explained in previous episodes. You
-must not repeat one that is already on that list.
+STEP 2 — WHAT ALREADY GOT COVERED. Fetch this URL:
+    https://raw.githubusercontent.com/sforaihey/fintech-pulse/main/docs/products-covered.md
+It lists the fintech products explained in previous episodes. You must not
+repeat one that is already on that list.
 
 STEP 3 — RESEARCH. Gather today's fintech news from the last 24 hours, in two
 buckets:
@@ -45,13 +48,13 @@ cannot be sourced, leave it out rather than softening it.
 
 STEP 4 — PRODUCT SEGMENT. Every episode must teach one fintech product or
 product category the listener does not yet know, so that over time she builds
-a map of what exists in the market. Pick ONE that is not in
-docs/products-covered.md, ideally connected to something in today's news.
-Explain, in plain language: what the product actually does, what problem it
-solves, who the notable providers are globally and in Saudi/GCC if any, how the
-money flows, and what a bank or PSP has to do to offer it. This segment should
-take about 40 percent of the character budget — it is the part she values
-most, so do not let the news crowd it out.
+a map of what exists in the market. Pick ONE that is not already covered,
+ideally connected to something in today's news. Explain, in plain language:
+what the product actually does, what problem it solves, who the notable
+providers are globally and in Saudi/GCC if any, how the money flows, and what
+a bank or PSP has to do to offer it. This segment should take about 40 percent
+of the character budget — it is the part she values most, so do not let the
+news crowd it out.
 
 STEP 5 — SCRIPT. Write a natural two-host conversation.
 
@@ -84,26 +87,28 @@ Render the full conversation as a single continuous MP3. Do not re-generate
 the audio to fix small wording issues — every regeneration costs the full
 character count again.
 
-STEP 7 — PUBLISH. Commit the MP3 to the GitHub repository
-sforaihey/fintech-pulse on branch main, into the incoming/ folder, named
-exactly:
+STEP 7 — PUBLISH. Using the GitHub connector, commit the MP3 to the
+repository sforaihey/fintech-pulse on branch main, into the incoming/ folder,
+named exactly:
     incoming/Fintech Pulse Daily Ep. NN.mp3
 (NN being the two-digit number from Step 1). Committing there is what
 publishes the episode — an automation picks it up from that folder, so do not
 edit feed.xml, episodes.json or the episodes/ folder yourself.
+Also attach the MP3 to your reply as a backup copy.
+If the commit fails, say so plainly in your reply and attach the MP3 — do not
+retry the audio generation, the file is already made and paid for.
 
-STEP 8 — RECORD THE PRODUCT AND THE SPEND. In the same commit:
+STEP 8 — LOG THE PRODUCT AND THE SPEND. In the same commit or a follow-up one:
   (a) Append one line to docs/products-covered.md:
       - Ep. NN (YYYY-MM-DD) — <product name>: <one-line description>
-  (b) Append one line to docs/credit-log.md with the exact character count of
-      the script you sent to ElevenLabs:
-      | NN | YYYY-MM-DD | <characters> | <audio length m:ss> |
-      Be accurate here — this log is the only record of what the show spends,
-      and it is what stops it running out of credit unnoticed.
+  (b) Append one row to docs/credit-log.md:
+      | NN | YYYY-MM-DD | <characters> | <length m:ss> |
+Be accurate about the character count — it is the only record of what the show
+spends, and it is what stops it running out of credit unnoticed.
 
-STEP 9 — REPORT. Reply with the episode number, its length, the three main
-stories covered, and the product explained. Include the show notes as text so
-they can be read later.
+STEP 9 — REPORT. Reply with the episode number, its length, the character
+count, the three main stories covered, and the product explained. Include the
+show notes as text so they can be read later.
 ```
 
 ---
@@ -112,7 +117,8 @@ they can be read later.
 
 - **No episode appeared** — check the run's reply first. A Step 0 stop on a
   Friday or Saturday is correct behaviour, not a failure.
-- **The GitHub Action failed** — see the Actions tab of the repository. The
-  usual cause is a filename without a recognisable episode number.
-- **The episode is there but not on the phone** — Apple Podcasts refreshes on
-  its own cycle; pull down to refresh on the show page.
+- **The episode was made but the commit failed** — GitHub is probably not
+  enabled on the task. The MP3 is attached to the run's reply; save it into
+  ~/Desktop/Fintech podcast and your Mac will publish it.
+- **The episode is in the feed but not on the phone** — Apple Podcasts
+  refreshes on its own cycle; pull down to refresh on the show page.
