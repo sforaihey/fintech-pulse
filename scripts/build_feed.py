@@ -42,7 +42,8 @@ SHOW = {
     "description": (
         "A short daily briefing on payments, banking and fintech - what moved "
         "overnight, why it matters, and what it means for the Gulf market. "
-        "Two hosts, roughly twelve minutes, ready before the drive to work."
+        "Every episode also explains one fintech product in plain language. "
+        "Two hosts, about seven minutes, ready before the drive to work."
     ),
     "language": "en",
     "category": "Business",
