@@ -50,11 +50,20 @@ docs/products-covered.md, ideally connected to something in today's news.
 Explain, in plain language: what the product actually does, what problem it
 solves, who the notable providers are globally and in Saudi/GCC if any, how the
 money flows, and what a bank or PSP has to do to offer it. This segment should
-run 3 to 4 minutes — it is the part she values most, so do not let the news
-crowd it out.
+take about 40 percent of the character budget — it is the part she values
+most, so do not let the news crowd it out.
 
-STEP 5 — SCRIPT. Write a natural two-host conversation, 12 to 13 minutes of
-speech, roughly 80 to 90 alternating turns:
+STEP 5 — SCRIPT. Write a natural two-host conversation.
+
+  HARD BUDGET: the finished spoken script must not exceed 5,800 CHARACTERS
+  including spaces. Count the characters before generating any audio, and cut
+  the script down if it is over. This is a spending limit, not a style note:
+  ElevenLabs charges 1 credit per character, and the monthly allowance only
+  covers about 5,900 characters per episode across a full month of weekdays.
+  Going over means the show runs out of credit before month end.
+  That budget produces roughly 6 to 7 minutes of audio.
+
+Within that budget, aim for roughly 45 to 55 alternating turns:
   - LAYLA — anchors the episode, drives the running order, asks the questions
     a smart listener would ask.
   - SAMI — the analyst; explains mechanics, gives numbers, takes positions.
@@ -71,9 +80,9 @@ POS terminal or an IBAN is. Do explain unfamiliar products properly.
 STEP 6 — AUDIO. Generate the episode with ElevenLabs, v3 pipeline:
   - LAYLA -> voice "Lauren"
   - SAMI  -> voice "Nate"
-Render the full conversation as a single continuous MP3. Verify the finished
-file is between 10 and 15 minutes; if it is materially short, extend the
-discussion rather than re-recording faster.
+Render the full conversation as a single continuous MP3. Do not re-generate
+the audio to fix small wording issues — every regeneration costs the full
+character count again.
 
 STEP 7 — PUBLISH. Commit the MP3 to the GitHub repository
 sforaihey/fintech-pulse on branch main, into the incoming/ folder, named
