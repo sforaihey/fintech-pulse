@@ -41,9 +41,12 @@ def check_elevenlabs(key: str) -> None:
                f"HTTP {exc.code} — enable the 'User' permission on the key")
 
     try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from render_episode import match_voice
+
         names = {v["name"].strip().lower(): v["voice_id"]
                  for v in el_get("voices", key).get("voices", [])}
-        missing = [v for v in VOICES_WANTED if v.lower() not in names]
+        missing = [v for v in VOICES_WANTED if not match_voice(v, names)]
         result("Voices", not missing,
                "all present" if not missing else f"missing {', '.join(missing)}")
         if missing:

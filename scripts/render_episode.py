@@ -34,15 +34,28 @@ def api_get(path: str, key: str):
         return json.loads(response.read())
 
 
+def match_voice(wanted: str, catalogue: dict) -> str | None:
+    """Find a voice by name, tolerating the descriptive suffix ElevenLabs adds.
+
+    The library stores them as "lauren - conversational ai", so an exact
+    match on "Lauren" finds nothing.
+    """
+    wanted = wanted.strip().lower()
+    for name, voice_id in catalogue.items():
+        if name == wanted or name.split(" - ")[0].strip() == wanted:
+            return voice_id
+    return None
+
+
 def resolve_voices(key: str) -> dict:
-    catalogue = api_get("voices", key).get("voices", [])
-    by_name = {v["name"].strip().lower(): v["voice_id"] for v in catalogue}
+    catalogue = {v["name"].strip().lower(): v["voice_id"]
+                 for v in api_get("voices", key).get("voices", [])}
     resolved = {}
     for speaker, wanted in VOICES.items():
-        voice_id = by_name.get(wanted.lower())
+        voice_id = match_voice(wanted, catalogue)
         if not voice_id:
-            sys.exit(f"voice '{wanted}' not found in the account. "
-                     f"Available: {', '.join(sorted(by_name))}")
+            sys.exit(f"voice '{wanted}' not found. "
+                     f"Library holds: {', '.join(sorted(catalogue))}")
         resolved[speaker] = voice_id
         print(f"  {speaker} -> {wanted} ({voice_id})")
     return resolved
