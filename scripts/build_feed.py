@@ -24,7 +24,8 @@ COVER = REPO / "cover.jpg"
 
 BASE_URL = "https://sforaihey.github.io/fintech-pulse"
 RIYADH = timezone(timedelta(hours=3))
-PUBLISH_HOUR = 7  # the cloud task runs ~07:30 Riyadh
+PUBLISH_HOUR = 7   # the cloud task runs ~07:30 Riyadh
+KEEP_LAST = 40    # rolling window of episodes kept in the feed
 
 SHOW = {
     "title": "Fintech Pulse Daily",
@@ -111,6 +112,18 @@ def sync_episodes() -> dict:
 
     if not sources:
         return meta
+
+    # A daily show would otherwise grow the repo without bound (~9MB an
+    # episode). Keep a rolling window; originals stay in the Desktop folder.
+    sources.sort(reverse=True)
+    dropped = sources[KEEP_LAST:]
+    sources = sources[:KEEP_LAST]
+    for number, _ in dropped:
+        stale = EPISODES / f"fintech-pulse-ep{number:02d}.mp3"
+        if stale.exists():
+            stale.unlink()
+            print(f"  pruned {stale.name} (outside newest {KEEP_LAST})")
+        meta.pop(f"{number:02d}", None)
 
     # The newest episode is today's; earlier ones step back one working day
     # each. Existing entries keep their stored date so nothing shifts later.
