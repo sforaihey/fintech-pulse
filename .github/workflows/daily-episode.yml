@@ -38,27 +38,46 @@ jobs:
           python -m pip install --quiet --upgrade anthropic
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
 
+      - name: Check the keys are present
+        id: keys
+        env:
+          A: ${{ secrets.ANTHROPIC_API_KEY }}
+          E: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          if [ -z "$A" ] || [ -z "$E" ]; then
+            echo "ANTHROPIC_API_KEY or ELEVENLABS_API_KEY not set —"
+            echo "skipping quietly rather than failing every morning."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Research and write the script
+        if: steps.keys.outputs.ready == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FINTECH_CHAR_BUDGET: ${{ inputs.char_budget || '4300' }}
         run: python3 scripts/write_episode.py
 
       - name: Render the audio
+        if: steps.keys.outputs.ready == 'true'
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: python3 scripts/render_episode.py
 
       - name: Log the product and the spend
+        if: steps.keys.outputs.ready == 'true'
         run: python3 scripts/log_episode.py
 
       - name: Build the feed
+        if: steps.keys.outputs.ready == 'true'
         env:
           FINTECH_SOURCE: incoming
           FINTECH_ADOPT: "1"
         run: python3 scripts/build_feed.py
 
       - name: Publish
+        if: steps.keys.outputs.ready == 'true'
         run: |
           rm -f episode.json
           if [ -z "$(git status --porcelain)" ]; then
