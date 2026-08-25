@@ -27,6 +27,18 @@
       <itunes:category text="Investing"/>
     </itunes:category>
     <item>
+      <title>Ep. 99 - 25 Aug 2026</title>
+      <description>Today's fintech briefing.</description>
+      <itunes:summary>Today's fintech briefing.</itunes:summary>
+      <pubDate>Tue, 25 Aug 2026 07:30:00 +0300</pubDate>
+      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep99.mp3" length="102897" type="audio/mpeg"/>
+      <guid isPermaLink="false">fintech-pulse-ep99</guid>
+      <itunes:duration>00:00:05</itunes:duration>
+      <itunes:episode>99</itunes:episode>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
       <title>Ep. 02 - 25 Aug 2026</title>
       <description>Today's fintech briefing.</description>
       <itunes:summary>Today's fintech briefing.</itunes:summary>

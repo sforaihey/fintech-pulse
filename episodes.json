@@ -14,5 +14,13 @@
     "duration": 709.26,
     "bytes": 8554030,
     "file": "fintech-pulse-ep02.mp3"
+  },
+  "99": {
+    "title": "Ep. 99 - 25 Aug 2026",
+    "date": "2026-08-25T07:30:00+03:00",
+    "summary": "Today's fintech briefing.",
+    "duration": 5.028571,
+    "bytes": 102897,
+    "file": "fintech-pulse-ep99.mp3"
   }
 }
