@@ -58,13 +58,13 @@ news crowd it out.
 
 STEP 5 — SCRIPT. Write a natural two-host conversation.
 
-  HARD BUDGET: the finished spoken script must not exceed 5,000 CHARACTERS
+  HARD BUDGET: the finished spoken script must not exceed 4,300 CHARACTERS
   including spaces. Count the characters before generating any audio, and cut
   the script down if it is over. This is a spending limit, not a style note:
   ElevenLabs charges 1 credit per character, so the script length IS the bill.
-  5,000 characters x 21.7 episodes is what the remaining allowance covers for
-  a full month. Going over means the show runs dry before month end.
-  That budget produces roughly 5 and a half minutes of audio.
+  The Creator plan renews on the 25th; 4,300 x 22 episodes is what one cycle's
+  credits cover. Going over means the show runs dry before the renewal.
+  That budget produces roughly 4 and a half to 5 minutes of audio.
 
 Within that budget, aim for roughly 45 to 55 alternating turns:
   - LAYLA — anchors the episode, drives the running order, asks the questions

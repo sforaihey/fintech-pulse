@@ -21,8 +21,8 @@ REMAINING = 96_332
 AS_OF = date(2026, 8, 25)
 # ---------------------------------------------------------------------------
 
-RENEWS_ON = None          # set to a date once the renewal day is known
-EPISODES_PER_MONTH = 21.7  # Sunday to Thursday
+RENEWS_ON = date(2026, 9, 25)  # Creator plan renewal
+EPISODES_PER_MONTH = 22    # Sun-Thu between renewals
 
 ROW = re.compile(r"^\|\s*(\d+)\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(\d+)\s*\|")
 
