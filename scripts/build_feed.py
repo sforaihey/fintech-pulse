@@ -181,7 +181,7 @@ def sync_episodes() -> dict:
         if not dest.exists():
             meta.pop(key, None)
             continue
-        meta[key]["duration"] = duration_seconds(dest)
+        meta[key]["duration"] = round(duration_seconds(dest))  # whole seconds: avoids CI/local churn
         meta[key]["bytes"] = dest.stat().st_size
         meta[key]["file"] = dest.name
 
