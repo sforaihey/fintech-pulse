@@ -46,7 +46,9 @@ SHOW = {
     "subcategory": "Investing",
 }
 
-EP_PATTERN = re.compile(r"ep(\d+)", re.IGNORECASE)
+# Tolerant of however the download happens to be named: "ep03",
+# "Ep. 03", "episode 3", "Fintech Pulse Daily Ep 3" all resolve.
+EP_PATTERN = re.compile(r"(?:episode|ep)[\s._-]*(\d+)", re.IGNORECASE)
 
 
 def episode_number(path: Path) -> int | None:
