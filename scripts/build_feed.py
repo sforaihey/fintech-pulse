@@ -209,6 +209,7 @@ def build_feed(meta: dict) -> str:
       <title>{escape(e['title'])}</title>
       <description>{escape(e['summary'])}</description>
       <itunes:summary>{escape(e['summary'])}</itunes:summary>
+      <content:encoded><![CDATA[{e.get('notes', '') or e['summary']}]]></content:encoded>
       <pubDate>{published.strftime('%a, %d %b %Y %H:%M:%S %z')}</pubDate>
       <enclosure url="{url}" length="{e['bytes']}" type="audio/mpeg"/>
       <guid isPermaLink="false">fintech-pulse-ep{key}</guid>

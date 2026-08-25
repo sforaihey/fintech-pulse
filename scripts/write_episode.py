@@ -119,6 +119,10 @@ the product segment, then a brief close on what to watch tomorrow.
 
 Reply with ONLY a JSON object in a ```json fence:
 {{
+  "title": "a real episode title — what today is about, not a date. Six to
+            nine words, no 'Ep. NN' prefix, no colon-subtitle padding",
+  "summary": "two or three sentences someone browsing a podcast app would read
+              to decide whether to listen. Name the actual stories.",
   "product": "name of the product explained",
   "product_note": "one line for the covered-products log",
   "stories": ["story one", "story two", "story three"],

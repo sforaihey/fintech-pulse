@@ -1,0 +1,30 @@
+name: Make theme music
+
+# Generates the intro and outro once. They are committed to assets/ and every
+# episode reuses them, so this only needs running to change the sound.
+# The API key needs the "Music Generation" permission.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  music:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compose
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python3 scripts/make_intro.py
+      - name: Commit
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then echo "no change"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -m "Theme music" && git push

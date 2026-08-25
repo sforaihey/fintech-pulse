@@ -10,6 +10,7 @@ Needs ELEVENLABS_API_KEY.
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import urllib.error
@@ -19,7 +20,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 EPISODE = REPO / "episode.json"
 INCOMING = REPO / "incoming"
+ASSETS = REPO / "assets"
 WORK = REPO / ".render"
+CROSSFADE = 1.5   # seconds of overlap between music and speech
 
 API = "https://api.elevenlabs.io/v1"
 VOICES = {"DANA": "Matilda", "ADAM": "Eric"}
@@ -133,6 +136,37 @@ def speak_dialogue(inputs, model: str, key: str, dest: Path) -> None:
         dest.write_bytes(response.read())
 
 
+def dress(body: Path, out: Path) -> None:
+    """Top and tail the episode with the theme music, crossfaded.
+
+    A hard cut from music into speech sounds amateur; overlapping them by a
+    second and a half is what makes it sound produced.
+    """
+    parts = [p for p in (ASSETS / "intro.mp3", body, ASSETS / "outro.mp3")
+             if p.exists()]
+
+    if len(parts) == 1:
+        shutil.copy(body, out)
+        print("  no music in assets/ — published without a theme")
+        return
+
+    args = ["ffmpeg", "-y", "-loglevel", "error"]
+    for part in parts:
+        args += ["-i", str(part)]
+
+    filters, label = [], "[0:a]"
+    for position in range(1, len(parts)):
+        nxt = f"[x{position}]"
+        filters.append(
+            f"{label}[{position}:a]acrossfade=d={CROSSFADE}:c1=tri:c2=tri{nxt}")
+        label = nxt
+
+    args += ["-filter_complex", ";".join(filters), "-map", label,
+             "-c:a", "libmp3lame", "-b:a", BITRATE, str(out)]
+    subprocess.run(args, check=True)
+    print(f"  music: {' + '.join(part.stem for part in parts)}")
+
+
 def main() -> None:
     key = os.environ.get("ELEVENLABS_API_KEY")
     if not key:
@@ -175,13 +209,16 @@ def main() -> None:
     listing = WORK / "parts.txt"
     listing.write_text("".join(f"file '{p.name}'\n" for p in pieces))
 
-    INCOMING.mkdir(exist_ok=True)
-    out = INCOMING / f"Fintech Pulse Daily Ep. {episode['number']:02d}.mp3"
+    body = WORK / "body.mp3"
     subprocess.run(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
          "-i", listing.name, "-c:a", "libmp3lame", "-b:a", BITRATE,
-         str(out.resolve())],
+         str(body.resolve())],
         check=True, cwd=WORK)
+
+    INCOMING.mkdir(exist_ok=True)
+    out = INCOMING / f"Fintech Pulse Daily Ep. {episode['number']:02d}.mp3"
+    dress(body, out)
 
     seconds = float(subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
