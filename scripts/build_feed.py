@@ -31,6 +31,9 @@ BASE_URL = "https://sforaihey.github.io/fintech-pulse"
 RIYADH = timezone(timedelta(hours=3))
 PUBLISH_HOUR = 7   # the cloud task runs ~07:30 Riyadh
 KEEP_LAST = 40    # rolling window of episodes kept in the feed
+ADOPT = os.environ.get("FINTECH_ADOPT") == "1"  # CI consumes incoming/
+DEFAULT_SUMMARY = ("Today's Saudi and global fintech news, plus a "
+                   "product explainer segment.")
 
 SHOW = {
     "title": "Fintech Pulse Daily",
@@ -105,7 +108,14 @@ def working_days_back(anchor: datetime, count: int) -> datetime:
 
 
 def sync_episodes() -> dict:
-    """Copy any new source MP3s into the repo, tagging as we go."""
+    """Bring the repo's episodes into line with whatever the source holds.
+
+    Two modes. Locally the drop folder is the source of truth and is only
+    read, so deleting a file there removes the episode from the feed. In
+    ADOPT mode (CI) the incoming files are *consumed* -- tagged into
+    episodes/ and deleted -- because the uploader only ever adds one file
+    and episodes.json is what carries the show forward.
+    """
     meta = load_meta()
     EPISODES.mkdir(exist_ok=True)
 
@@ -116,52 +126,70 @@ def sync_episodes() -> dict:
             print(f"  skip (no episode number): {src.name}")
             continue
         sources.append((number, src))
-
-    if not sources:
-        return meta
-
-    # A daily show would otherwise grow the repo without bound (~9MB an
-    # episode). Keep a rolling window; originals stay in the Desktop folder.
     sources.sort(reverse=True)
-    sources = sources[:KEEP_LAST]
 
-    # Anything no longer backed by a source file -- pruned by the rolling
-    # window, or deleted by hand -- leaves the feed too, so the published
-    # show always matches the drop folder.
-    live = {f"{number:02d}" for number, _ in sources}
-    for key in sorted(set(meta) - live):
-        stale = EPISODES / f"fintech-pulse-ep{key}.mp3"
-        if stale.exists():
-            stale.unlink()
-        meta.pop(key, None)
-        print(f"  removed episode {key} (no source file)")
-
-    # The newest episode is today's; earlier ones step back one working day
-    # each. Existing entries keep their stored date so nothing shifts later.
-    newest = max(number for number, _ in sources)
     today = datetime.now(RIYADH).replace(
         hour=PUBLISH_HOUR, minute=30, second=0, microsecond=0)
 
-    for number, src in sources:
-        key = f"{number:02d}"
+    if ADOPT:
+        for number, src in sources:
+            key = f"{number:02d}"
+            name = src.name
+            if key not in meta:
+                meta[key] = {
+                    "title": f"Ep. {key} - {today:%-d %b %Y}",
+                    "date": today.isoformat(),
+                    "summary": DEFAULT_SUMMARY,
+                }
+                print(f"  adopted episode {key} -> {meta[key]['title']}")
+            tag_episode(src, EPISODES / f"fintech-pulse-ep{key}.mp3",
+                        meta[key], number)
+            src.unlink()
+            print(f"  tagged episode {key}, consumed {name}")
+    else:
+        # Anything no longer backed by a source file leaves the feed, so the
+        # published show always matches the drop folder.
+        live = {f"{number:02d}" for number, _ in sources[:KEEP_LAST]}
+        for key in sorted(set(meta) - live):
+            meta.pop(key, None)
+            print(f"  removed episode {key} (no source file)")
+
+        newest = max((number for number, _ in sources), default=0)
+        for number, src in sources[:KEEP_LAST]:
+            key = f"{number:02d}"
+            dest = EPISODES / f"fintech-pulse-ep{key}.mp3"
+            if key not in meta:
+                published = working_days_back(today, newest - number)
+                meta[key] = {
+                    "title": f"Ep. {key} - {published:%-d %b %Y}",
+                    "date": published.isoformat(),
+                    "summary": DEFAULT_SUMMARY,
+                }
+                print(f"  new episode {key} -> {meta[key]['title']}")
+            if not dest.exists() or dest.stat().st_mtime < src.stat().st_mtime:
+                tag_episode(src, dest, meta[key], number)
+                print(f"  tagged {dest.name}")
+
+    # Rolling window, then drop anything with no audio behind it and refresh
+    # the numbers the feed quotes.
+    for key in sorted(meta, key=int, reverse=True)[KEEP_LAST:]:
+        meta.pop(key, None)
+        print(f"  pruned episode {key} (outside newest {KEEP_LAST})")
+
+    for key in sorted(meta, key=int):
         dest = EPISODES / f"fintech-pulse-ep{key}.mp3"
-
-        if key not in meta:
-            published = working_days_back(today, newest - number)
-            meta[key] = {
-                "title": f"Ep. {key} - {published:%-d %b %Y}",
-                "date": published.isoformat(),
-                "summary": "Today's fintech briefing.",
-            }
-            print(f"  new episode {key} -> {meta[key]['title']}")
-
-        if not dest.exists() or dest.stat().st_mtime < src.stat().st_mtime:
-            tag_episode(src, dest, meta[key], number)
-            print(f"  tagged {dest.name}")
-
+        if not dest.exists():
+            meta.pop(key, None)
+            continue
         meta[key]["duration"] = duration_seconds(dest)
         meta[key]["bytes"] = dest.stat().st_size
         meta[key]["file"] = dest.name
+
+    for stale in EPISODES.glob("*.mp3"):
+        if (episode_number(stale) is None
+                or f"{episode_number(stale):02d}" not in meta):
+            stale.unlink()
+            print(f"  deleted orphaned {stale.name}")
 
     META.write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n")
     return meta

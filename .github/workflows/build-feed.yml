@@ -30,6 +30,7 @@ jobs:
       - name: Build feed from incoming episodes
         env:
           FINTECH_SOURCE: incoming
+          FINTECH_ADOPT: "1"
         run: |
           mkdir -p incoming
           python3 scripts/build_feed.py
