@@ -30,5 +30,13 @@
     "duration": 309,
     "bytes": 3745784,
     "file": "fintech-pulse-ep04.mp3"
+  },
+  "05": {
+    "title": "Ep. 05 - 26 Aug 2026",
+    "date": "2026-08-26T07:30:00+03:00",
+    "summary": "Today's Saudi and global fintech news, plus a product explainer segment.",
+    "duration": 387,
+    "bytes": 4690268,
+    "file": "fintech-pulse-ep05.mp3"
   }
 }
