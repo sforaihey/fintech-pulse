@@ -6,6 +6,11 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export PATH="/opt/homebrew/bin:$PATH"
 
+# launchd has no terminal, so a credential prompt would hang the job
+# forever instead of failing. Make git give up loudly instead.
+export GIT_TERMINAL_PROMPT=0
+export GIT_ASKPASS=/usr/bin/true
+
 python3 scripts/build_feed.py
 
 if [ -z "$(git status --porcelain)" ]; then

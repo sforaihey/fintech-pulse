@@ -9,6 +9,7 @@ show by pubDate, so the dates must not drift.
 """
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -17,7 +18,10 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 REPO = Path(__file__).resolve().parent.parent
-SOURCE = Path.home() / "Desktop" / "Fintech podcast"
+# Defaults to the Desktop folder; CI overrides it with the repo's
+# incoming/ directory so the feed can rebuild without this Mac.
+SOURCE = Path(os.environ.get("FINTECH_SOURCE",
+                             Path.home() / "Desktop" / "Fintech podcast"))
 EPISODES = REPO / "episodes"
 META = REPO / "episodes.json"
 COVER = REPO / "cover.jpg"
@@ -178,7 +182,6 @@ def build_feed(meta: dict) -> str:
       <itunes:explicit>false</itunes:explicit>
     </item>""")
 
-    built = datetime.now(RIYADH).strftime('%a, %d %b %Y %H:%M:%S %z')
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
      xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
@@ -207,7 +210,6 @@ def build_feed(meta: dict) -> str:
     <itunes:category text="{SHOW['category']}">
       <itunes:category text="{SHOW['subcategory']}"/>
     </itunes:category>
-    <lastBuildDate>{built}</lastBuildDate>
 {chr(10).join(items)}
   </channel>
 </rss>
