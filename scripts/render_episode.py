@@ -24,8 +24,16 @@ WORK = REPO / ".render"
 API = "https://api.elevenlabs.io/v1"
 VOICES = {"DANA": "Matilda", "ADAM": "Eric"}
 MODEL_PREFERENCE = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5"]
-GAP_SECONDS = 0.28
 BITRATE = "96k"
+
+# Text-to-dialogue renders a whole exchange in one pass, so the speakers react
+# to each other instead of each line being performed in isolation. The endpoint
+# is reliable up to about 2,000 characters, so long episodes go in chunks split
+# on speaker boundaries.
+DIALOGUE_CHARS = 1800
+# Lower stability = more expressive. ElevenLabs calls ~0.5 "Natural" and the
+# lower end "Creative"; conversation wants the expressive end.
+STABILITY = float(os.environ.get("FINTECH_STABILITY", "0.35"))
 
 
 def api_get(path: str, key: str):
@@ -75,16 +83,53 @@ def resolve_model(key: str) -> str:
 
 
 def speak(text: str, voice_id: str, model: str, key: str, dest: Path) -> None:
+    """Single line, one voice. Used by the audition page."""
     body = json.dumps({
         "text": text,
         "model_id": model,
-        "voice_settings": {"stability": 0.45, "similarity_boost": 0.8},
+        "voice_settings": {"stability": STABILITY, "similarity_boost": 0.8},
     }).encode()
     request = urllib.request.Request(
         f"{API}/text-to-speech/{voice_id}", data=body,
         headers={"xi-api-key": key, "Content-Type": "application/json",
                  "Accept": "audio/mpeg"})
     with urllib.request.urlopen(request, timeout=180) as response:
+        dest.write_bytes(response.read())
+
+
+def chunk_lines(lines, voices):
+    """Group consecutive lines into blocks the dialogue endpoint can take."""
+    blocks, current, size = [], [], 0
+    for line in lines:
+        speaker = line["speaker"].upper()
+        if speaker not in voices:
+            print(f"  ! unknown speaker {speaker!r}, skipping the line")
+            continue
+        text = line["text"].strip()
+        if not text:
+            continue
+        if current and size + len(text) > DIALOGUE_CHARS:
+            blocks.append(current)
+            current, size = [], 0
+        current.append({"text": text, "voice_id": voices[speaker]})
+        size += len(text)
+    if current:
+        blocks.append(current)
+    return blocks
+
+
+def speak_dialogue(inputs, model: str, key: str, dest: Path) -> None:
+    """A whole exchange in one pass, so the voices respond to each other."""
+    body = json.dumps({
+        "inputs": inputs,
+        "model_id": model,
+        "settings": {"stability": STABILITY},
+    }).encode()
+    request = urllib.request.Request(
+        f"{API}/text-to-dialogue", data=body,
+        headers={"xi-api-key": key, "Content-Type": "application/json",
+                 "Accept": "audio/mpeg"})
+    with urllib.request.urlopen(request, timeout=300) as response:
         dest.write_bytes(response.read())
 
 
@@ -108,32 +153,27 @@ def main() -> None:
     voices = resolve_voices(key)
     model = resolve_model(key)
 
-    silence = WORK / "gap.mp3"
-    subprocess.run(
-        ["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi",
-         "-i", "anullsrc=r=44100:cl=mono", "-t", str(GAP_SECONDS),
-         "-b:a", BITRATE, str(silence)], check=True)
+    blocks = chunk_lines(lines, voices)
+    print(f"  {len(blocks)} dialogue block(s)")
 
     pieces = []
-    for index, line in enumerate(lines):
-        speaker = line["speaker"].upper()
-        if speaker not in voices:
-            print(f"  ! unknown speaker {speaker!r} on line {index}, skipping")
-            continue
+    for index, inputs in enumerate(blocks):
         part = WORK / f"{index:03d}.mp3"
         try:
-            speak(line["text"], voices[speaker], model, key, part)
+            speak_dialogue(inputs, model, key, part)
         except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", "replace")[:300]
-            sys.exit(f"ElevenLabs error {exc.code} on line {index}: {detail}")
-        pieces += [part, silence]
-        print(f"  line {index + 1}/{len(lines)} ({speaker})", flush=True)
+            detail = exc.read().decode("utf-8", "replace")[:400]
+            sys.exit(f"ElevenLabs error {exc.code} on block {index}: {detail}")
+        pieces.append(part)
+        print(f"  block {index + 1}/{len(blocks)} "
+              f"({len(inputs)} turns, {sum(len(i['text']) for i in inputs):,} chars)",
+              flush=True)
 
     if not pieces:
         sys.exit("nothing was rendered")
 
     listing = WORK / "parts.txt"
-    listing.write_text("".join(f"file '{p.name}'\n" for p in pieces[:-1]))
+    listing.write_text("".join(f"file '{p.name}'\n" for p in pieces))
 
     INCOMING.mkdir(exist_ok=True)
     out = INCOMING / f"Fintech Pulse Daily Ep. {episode['number']:02d}.mp3"

@@ -24,7 +24,7 @@ RAW = "https://raw.githubusercontent.com/sforaihey/fintech-pulse/main"
 
 RIYADH = timezone(timedelta(hours=3))
 MODEL = "claude-opus-5"
-CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "4300"))
+CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "7500"))
 
 SYSTEM = """You write "Fintech Pulse Daily", a two-host audio briefing for one \
 listener: a Saudi banking product manager who works in merchant acquiring and \
@@ -32,19 +32,40 @@ corporate onboarding. She knows banking well — never explain what a POS \
 terminal or an IBAN is. She does not know the whole product landscape, which \
 is why every episode teaches her one product properly.
 
-The hosts:
-  DANA — anchors the episode, drives the running order, asks the question a \
-sharp listener would ask.
-  ADAM — the analyst; explains mechanics, gives numbers, takes positions.
+THE HOSTS
+  DANA — anchors the episode. Warm, quick, a little sceptical. She asks the
+  question the listener is actually thinking, and she pushes back when Adam
+  glosses over something.
+  ADAM — the analyst. Dry, precise, occasionally opinionated. He has numbers
+  and he has views, and he is not always right.
 
-They genuinely discuss. Where there is a real disagreement, they have it. No \
-sound-effect directions, no music cues, no "welcome back after the break". \
-Spoken dialogue only — every character you write is spoken aloud and costs \
-money, so there is no room for filler.
+THIS IS A CONVERSATION, NOT A BULLETIN. That distinction is the whole point of
+the show, so write it the way two colleagues actually talk:
+
+  - They interrupt each other. They finish each other's thoughts. They react
+    before they respond — "Wait." / "Hold on." / "Hmm." / "Oh, that's clever."
+  - They disagree, genuinely, and neither always wins. Adam takes a position;
+    Dana tests it. Sometimes she changes his mind.
+  - They think out loud. Half-formed thoughts, a correction mid-sentence, a
+    "let me put it another way" — this is what makes speech sound human.
+  - They are funny occasionally, dry rather than jokey.
+  - Short lines matter. A three-word reaction between two longer turns is what
+    gives a conversation its rhythm. A script where every line is three
+    sentences long sounds like two press releases being read aloud.
+
+DELIVERY MARKUP — the voice model performs these, so use them:
+  - Audio tags in square brackets for genuine reactions: [laughs], [sighs],
+    [thoughtful], [skeptical], [surprised], [dry], [amused]. Use them where a
+    person would really do that — a handful per episode, not every line.
+  - Ellipses (...) create a real pause and hesitation.
+  - CAPITALS on a word for emphasis.
+  - Dashes for a cut-off — where one host talks over the other.
 
 Sourcing: prefer regulator announcements, company statements and reputable \
 financial press. Use concrete figures and name organisations. If a claim \
-cannot be sourced, leave it out rather than softening it."""
+cannot be sourced, leave it out rather than softening it. But deliver the \
+figures conversationally — "call it three and a quarter trillion riyals" not \
+"SAR 3.25 trillion"."""
 
 
 def fetch(path: str) -> str:
@@ -85,11 +106,13 @@ not be one of these, which previous episodes already covered:
 Explain what it does, the problem it solves, the notable providers globally and
 in Saudi/GCC, how the money flows, and what a bank or PSP must do to offer it.
 Give this segment about 40 percent of the script — it is the part she values
-most.
+most. Teach it through the conversation: Dana asking the naive question, Adam
+answering, Dana finding the edge case. Not a lecture from Adam.
 
-HARD LIMIT: the spoken text across all lines must total {CHAR_BUDGET:,}
-characters or fewer. This is a spending limit — the audio is billed per
-character. Count as you write and cut to fit. Aim for 40 to 48 lines.
+LENGTH: aim for roughly {CHAR_BUDGET:,} characters of spoken text across all
+lines — that is about {CHAR_BUDGET // 900} minutes. Do not pad to reach it and do not
+race to stay under it; write the conversation the story deserves and let it
+land near that mark. Aim for 70 to 100 lines, deliberately uneven in length.
 
 Running order: short cold open on the biggest story, Saudi news, global news,
 the product segment, then a brief close on what to watch tomorrow.
@@ -168,11 +191,14 @@ def main() -> None:
     print(f"  {len(episode['lines'])} lines, {used:,} characters "
           f"(budget {CHAR_BUDGET:,})")
 
-    if used > CHAR_BUDGET:
-        # Trim from the end at a line boundary rather than paying to re-write.
-        while episode["lines"] and script_chars(episode["lines"]) > CHAR_BUDGET:
+    # Only a runaway gets cut: trimming the tail costs the episode its ending,
+    # so tolerate overshoot and intervene only when the spend is unreasonable.
+    ceiling = int(CHAR_BUDGET * 1.3)
+    if used > ceiling:
+        while episode["lines"] and script_chars(episode["lines"]) > ceiling:
             episode["lines"].pop()
-        print(f"  trimmed to {script_chars(episode['lines']):,} characters")
+        print(f"  over {ceiling:,} — trimmed to "
+              f"{script_chars(episode['lines']):,} characters")
 
     episode.update(number=number, date=today.isoformat(),
                    characters=script_chars(episode["lines"]))
