@@ -27,6 +27,18 @@
       <itunes:category text="Investing"/>
     </itunes:category>
     <item>
+      <title>Ep. 04 - 26 Aug 2026</title>
+      <description>Today's Saudi and global fintech news, plus a product explainer segment.</description>
+      <itunes:summary>Today's Saudi and global fintech news, plus a product explainer segment.</itunes:summary>
+      <pubDate>Wed, 26 Aug 2026 07:30:00 +0300</pubDate>
+      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep04.mp3" length="3745784" type="audio/mpeg"/>
+      <guid isPermaLink="false">fintech-pulse-ep04</guid>
+      <itunes:duration>00:05:09</itunes:duration>
+      <itunes:episode>4</itunes:episode>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
       <title>Ep. 03 - 25 Aug 2026</title>
       <description>Today's Saudi and global fintech news, plus a product explainer segment.</description>
       <itunes:summary>Today's Saudi and global fintech news, plus a product explainer segment.</itunes:summary>
