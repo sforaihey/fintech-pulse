@@ -18,10 +18,11 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 REPO = Path(__file__).resolve().parent.parent
-# Defaults to the Desktop folder; CI overrides it with the repo's
-# incoming/ directory so the feed can rebuild without this Mac.
+# NOT ~/Desktop: macOS TCC blocks launchd jobs from reading it, and the
+# job hangs on a consent prompt that can never be shown. The Desktop
+# 'Fintech podcast' folder is a symlink to this path. CI overrides it.
 SOURCE = Path(os.environ.get("FINTECH_SOURCE",
-                             Path.home() / "Desktop" / "Fintech podcast"))
+                             Path.home() / "fintech-pulse-incoming"))
 EPISODES = REPO / "episodes"
 META = REPO / "episodes.json"
 COVER = REPO / "cover.jpg"
