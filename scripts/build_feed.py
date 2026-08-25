@@ -121,14 +121,18 @@ def sync_episodes() -> dict:
     # A daily show would otherwise grow the repo without bound (~9MB an
     # episode). Keep a rolling window; originals stay in the Desktop folder.
     sources.sort(reverse=True)
-    dropped = sources[KEEP_LAST:]
     sources = sources[:KEEP_LAST]
-    for number, _ in dropped:
-        stale = EPISODES / f"fintech-pulse-ep{number:02d}.mp3"
+
+    # Anything no longer backed by a source file -- pruned by the rolling
+    # window, or deleted by hand -- leaves the feed too, so the published
+    # show always matches the drop folder.
+    live = {f"{number:02d}" for number, _ in sources}
+    for key in sorted(set(meta) - live):
+        stale = EPISODES / f"fintech-pulse-ep{key}.mp3"
         if stale.exists():
             stale.unlink()
-            print(f"  pruned {stale.name} (outside newest {KEEP_LAST})")
-        meta.pop(f"{number:02d}", None)
+        meta.pop(key, None)
+        print(f"  removed episode {key} (no source file)")
 
     # The newest episode is today's; earlier ones step back one working day
     # each. Existing entries keep their stored date so nothing shifts later.
