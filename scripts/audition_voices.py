@@ -42,7 +42,7 @@ ROLE_TITLE = {
                 "Explains the mechanics, gives the numbers, takes positions."),
 }
 
-CURRENT = {"anchor": "Lauren", "analyst": "Nate"}
+CURRENT = {"anchor": "Matilda", "analyst": "Eric"}
 
 
 def page(rendered: dict) -> str:
