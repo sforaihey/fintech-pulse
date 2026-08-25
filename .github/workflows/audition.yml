@@ -1,0 +1,29 @@
+name: Voice auditions
+
+# Renders the same two lines in several voices and publishes a comparison
+# page. Costs roughly 2,300 credits — run it when choosing or changing hosts.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audition:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Render the auditions
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python3 scripts/audition_voices.py
+      - name: Publish
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then echo "no change"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -m "Voice auditions" && git push
