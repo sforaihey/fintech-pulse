@@ -46,6 +46,10 @@ def check_elevenlabs(key: str) -> None:
         missing = [v for v in VOICES_WANTED if v.lower() not in names]
         result("Voices", not missing,
                "all present" if not missing else f"missing {', '.join(missing)}")
+        if missing:
+            print(f"        your library has {len(names)} voice(s):")
+            for name, voice_id in sorted(names.items()):
+                print(f"          {name}  ({voice_id})")
     except urllib.error.HTTPError as exc:
         result("Voices", False,
                f"HTTP {exc.code} — set the 'Voices' permission to Read")
