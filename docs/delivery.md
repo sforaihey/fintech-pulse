@@ -34,3 +34,22 @@ internal integration token (notion.so/my-integrations) with the drop page
 shared to it. Create the token yourself and keep it out of the repo — either
 in the shell environment on this Mac, or as a GitHub Actions secret named
 `NOTION_TOKEN` if you want this running in the cloud.
+
+# Watching the credit balance
+
+`python3 scripts/credit_report.py` reports what is left and what episode
+length that sustains, counting only Sunday-to-Thursday days remaining before
+the plan renews.
+
+By default it uses a figure typed in by hand from the usage page. To make it
+live instead, create a key in the ElevenLabs developer portal (API Keys tab)
+and put it in your shell profile:
+
+    export ELEVENLABS_API_KEY="..."
+
+The script then calls `GET /v1/user/subscription`, which returns the exact
+`character_count`, `character_limit` and reset date — no more hand-editing,
+and no chance of the figure going stale.
+
+Keep the key in your environment or your password manager. It does not belong
+in this repo, in the scheduled task's instructions, or in a chat message.
