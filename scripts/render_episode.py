@@ -22,7 +22,7 @@ INCOMING = REPO / "incoming"
 WORK = REPO / ".render"
 
 API = "https://api.elevenlabs.io/v1"
-VOICES = {"LAYLA": "Matilda", "SAMI": "Eric"}
+VOICES = {"DANA": "Matilda", "ADAM": "Eric"}
 MODEL_PREFERENCE = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5"]
 GAP_SECONDS = 0.28
 BITRATE = "96k"

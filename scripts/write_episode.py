@@ -5,7 +5,7 @@ scraping to maintain -- the model does the searching and we get back a script
 already inside the character budget.
 
 Output: episode.json  {"number", "date", "product", "stories", "notes",
-                       "lines": [{"speaker": "LAYLA"|"SAMI", "text": ...}]}
+                       "lines": [{"speaker": "DANA"|"ADAM", "text": ...}]}
 """
 
 import json
@@ -33,9 +33,9 @@ terminal or an IBAN is. She does not know the whole product landscape, which \
 is why every episode teaches her one product properly.
 
 The hosts:
-  LAYLA — anchors the episode, drives the running order, asks the question a \
+  DANA — anchors the episode, drives the running order, asks the question a \
 sharp listener would ask.
-  SAMI  — the analyst; explains mechanics, gives numbers, takes positions.
+  ADAM — the analyst; explains mechanics, gives numbers, takes positions.
 
 They genuinely discuss. Where there is a real disagreement, they have it. No \
 sound-effect directions, no music cues, no "welcome back after the break". \
@@ -100,7 +100,7 @@ Reply with ONLY a JSON object in a ```json fence:
   "product_note": "one line for the covered-products log",
   "stories": ["story one", "story two", "story three"],
   "notes": "show notes in markdown, including a Sources list with links",
-  "lines": [{{"speaker": "LAYLA", "text": "..."}}, ...]
+  "lines": [{{"speaker": "DANA", "text": "..."}}, ...]
 }}"""
 
 

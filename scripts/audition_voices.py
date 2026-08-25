@@ -22,7 +22,7 @@ LINES = {
     "anchor": (
         "Good morning. SAMA has published its updated payment services rules, "
         "and buried in the annex is a change that touches every acquirer in "
-        "the Kingdom. Sami — is this as big as it looks?"),
+        "the Kingdom. Adam — is this as big as it looks?"),
     "analyst": (
         "Bigger, honestly. The headline is settlement timing, but the real "
         "story is paragraph four: they have redefined who holds the funds in "
@@ -36,9 +36,9 @@ CANDIDATES = {
 }
 
 ROLE_TITLE = {
-    "anchor": ("LAYLA — the anchor",
+    "anchor": ("DANA — the anchor",
                "Opens the episode, sets the running order, asks the questions."),
-    "analyst": ("SAMI — the analyst",
+    "analyst": ("ADAM — the analyst",
                 "Explains the mechanics, gives the numbers, takes positions."),
 }
 
