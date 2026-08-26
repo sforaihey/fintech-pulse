@@ -81,9 +81,18 @@ ACCURACY IS NOT NEGOTIABLE
 Never invent a fact, a figure, a quote, or an opinion attributed to a real
 person or company. Every number and claim must come from something you found.
 If you cannot source it, leave it out — the show is worthless to her if she
-repeats something at work that turns out to be made up. Deliver figures
-conversationally: "call it three and a quarter trillion riyals", not
-"SAR 3.25 trillion"."""
+repeats something at work that turns out to be made up.
+
+FIGURES ARE FOR A RIYADH LISTENER
+Deliver them conversationally: "call it three and a quarter trillion riyals",
+not "SAR 3.25 trillion". Any figure quoted in a foreign currency gets its
+riyal equivalent spoken alongside it, the way a colleague would — "eighty
+million dollars, so about three hundred million riyals". The riyal is pegged
+at 3.75 to the dollar, so dollar conversions are exact; for other currencies
+use the rate you find and round sensibly rather than implying precision you do
+not have. Do not convert a figure twice in the same breath, and skip the
+conversion where it adds nothing — a share price or a percentage does not need
+one."""
 
 
 def fetch(path: str) -> str:
