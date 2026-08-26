@@ -27,6 +27,54 @@
       <itunes:category text="Investing"/>
     </itunes:category>
     <item>
+      <title>Ep. 03 — A New Chairman, Deposits Outrunning Loans, And Plaid</title>
+      <description>A leadership change at Saudi Arabia's capital markets regulator has reopened the foreign-ownership question, while listed-bank deposits outgrew lending for a second straight quarter and weekly POS spending held above three and a half billion dollars on a surge in school fees. Globally: Fintech Galaxy's in-principle nod from the UAE central bank for open finance, Fitch on a three-hundred-and-twenty-billion-dollar UAE debt market, Rabobank's two-billion-euro AI commitment, and a Tokyo convenience-store chain running stablecoins through ordinary POS registers. The product spotlight is Plaid — what a bank-data network actually sells, and why the consent screen is the real product.</description>
+      <itunes:summary>A leadership change at Saudi Arabia's capital markets regulator has reopened the foreign-ownership question, while listed-bank deposits outgrew lending for a second straight quarter and weekly POS spending held above three and a half billion dollars on a surge in school fees. Globally: Fintech Galaxy's in-principle nod from the UAE central bank for open finance, Fitch on a three-hundred-and-twenty-billion-dollar UAE debt market, Rabobank's two-billion-euro AI commitment, and a Tokyo convenience-store chain running stablecoins through ordinary POS registers. The product spotlight is Plaid — what a bank-data network actually sells, and why the consent screen is the real product.</itunes:summary>
+      <content:encoded><![CDATA[## Fintech Pulse Daily — Tuesday 25 August 2026
+
+### Saudi Arabia
+- **CMA leadership change.** Bloomberg (24 Aug) reported that leadership changes at the capital markets regulator have revived investor and banker hopes for further liberalisation, including a long-awaited easing of foreign-ownership limits. Mazen Al-Sudairi — former head of research at Al Rajhi Bank and an adviser at the Secretariat General of the Council of Ministers — was appointed chairman.
+- **Bank balance sheets.** Net loans at the ten listed Saudi banks rose 7% year on year to SR3.25trn (~$865.2bn) at end-Q2 2026; deposits rose 9% to SR3.15trn. Deposit growth outpaced lending for a second consecutive quarter (Al Rajhi Capital, via Arab News). Al Rajhi Bank and SNB held the largest loan books at SR762.10bn and SR739.56bn, each up 3%; Riyad Bank and Banque Saudi Fransi each grew 7%.
+- **Card spending.** Weekly POS value came in at SR14.19bn (~$3.79bn) — a third straight week above $3.5bn — with education-related transactions up 62.7% week on week ahead of the school year. Q1 2026 consumer spending was SR425bn, up 6.8% year on year.
+- **Sukuk.** The August domestic sukuk issuance raised SR9.52bn (~$2.54bn), up 77.94% on July; the first tranche of SR1.55bn matures in 2031.
+- **Open banking.** SAMA began licensing fintechs to provide open banking services in March 2026 after the sandbox phase; open banking is now a fully supervised licensed activity.
+- **Context.** SAMA Governor Ayman Al-Sayari took up a two-year term as the Financial Stability Board's Regional Engagement Chair on 10 August 2026.
+
+### Global
+- **Fintech Galaxy** received in-principle approval from the Central Bank of the UAE to operate as an open finance provider, allowing it to participate in Al Tareq, the UAE's open finance scheme. Full approval still pending.
+- **Fitch** put the UAE debt market at $320bn, with dollar issuance up 40%.
+- **Rabobank** said it will commit up to €2bn over three years to build and scale AI capabilities (Interim Results 2026).
+- **Visa/BioCatch** — Visa's $2.4bn all-cash deal for the Israeli behavioural fraud-prevention firm is expected to close in Q2 2027.
+- **Stablecoins at the till.** NETSTARS and Lawson ran a second in-store stablecoin payment trial in Tokyo, taking USDC and USDT on Solana, Morph and Polygon, and JPYC on Polygon, from MetaMask wallets through Lawson's existing POS registers via the NETSTARS Stablecoin Pay gateway. Participation was limited to company stakeholders.
+
+### Product spotlight — Plaid
+What a bank-data network sells, how Link actually works from the user's side, the access-token model, where the revenue comes from (per-call data, then risk scoring and payment initiation), the fragility of screen-scraped connections, the shift to OAuth and bank-charged data access, and the competitive set. Includes the abandoned $5.3bn Visa acquisition after the DOJ's 2020 antitrust suit.
+
+**Lesson:** where a regulator mandates access, coverage stops being a moat. The defensible product is the consent experience and the decision you make in the seconds after the connection succeeds.
+
+### Sources
+- Bloomberg — Saudi capital markets shakeup: https://www.bloomberg.com/news/articles/2026-08-24/saudi-capital-markets-shakeup-puts-foreign-inflows-back-in-focus
+- Arab News — Saudi listed banks' net loans rise 7% to $865.2bn in Q2: https://www.arabnews.com/node/2655204/amp
+- Arab News — Saudi weekly consumer spending at $3.79bn as education surges: https://www.arabnews.com/node/2655399/business-economy
+- Arab News — Saudi Arabia raises $2.54bn in August sukuk issuance: https://www.arabnews.com/node/2655175/business-economy
+- Arab News — UAE debt market hits $320bn (Fitch): https://www.arabnews.com/saudiarabia
+- SAMA — Commences licensing of fintech companies for open banking: https://www.sama.gov.sa/en-US/MediaCenter/News/pages/news-1135.aspx
+- Clyde & Co — SAMA's open banking licensing framework: https://www.clydeco.com/en/insights/2026/03/sama-new-licensing-framework-for-open-banking
+- FinTech Futures — Fintech Galaxy secures IPA for domestic open finance services: https://www.fintechfutures.com/regulatory-actions/fintech-galaxy-ipa-approval-cbuae
+- Open Banking Expo — Fintech Galaxy IPA / Al Tareq: https://www.openbankingexpo.com/news/fintech-galaxy-receives-in-principle-approval-from-cbuae-to-operate-as-open-finance-provider/
+- FinTech Futures — Top five fintech news stories of the week, 7 August 2026 (Visa/BioCatch, Rabobank AI): https://www.fintechfutures.com/fintech/fintech-futures-top-five-news-stories-of-the-week-7-august-2026
+- FinTech Futures — August 2026: Top five AI stories of the month: https://www.fintechfutures.com/ai-in-fintech/august-2026-top-five-ai-stories-of-the-month
+- Mintmark Brief — Stablecoins & Tokenization, week ending 21 August 2026 (Lawson/NETSTARS): https://buttondown.com/mintmarkresearch/archive/weekly-briefing-2026-08-21/
+- SAMA on X — Governor Al-Sayari appointed FSB Regional Engagement Chair: https://x.com/sama_gov]]></content:encoded>
+      <pubDate>Tue, 25 Aug 2026 07:30:00 +0300</pubDate>
+      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep03.mp3" length="10293480" type="audio/mpeg"/>
+      <guid isPermaLink="false">fintech-pulse-ep03</guid>
+      <itunes:duration>00:14:14</itunes:duration>
+      <itunes:episode>3</itunes:episode>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
       <title>Ep. 02 — Tokenised Stocks Land While Washington Sets The Clock</title>
       <description>Coinbase puts tokenised Apple, Nvidia, Meta and Alphabet shares live on Base with roughly fifty DeFi protocols supporting them on day one, while the US Treasury proposes the GENIUS Act rules that decide which stablecoins may legally reach American users. Dana and Adam also dig into Saudi listed banks' second-quarter loan growth, SAMA's shift from open banking framework to open banking licensing, and a new Cambridge study on where AI actually lifts productivity in finance. The product spotlight is Marqeta: issuer processing, just-in-time funding, and why the interchange maths does not travel to a regulated domestic-scheme market.</description>
       <itunes:summary>Coinbase puts tokenised Apple, Nvidia, Meta and Alphabet shares live on Base with roughly fifty DeFi protocols supporting them on day one, while the US Treasury proposes the GENIUS Act rules that decide which stablecoins may legally reach American users. Dana and Adam also dig into Saudi listed banks' second-quarter loan growth, SAMA's shift from open banking framework to open banking licensing, and a new Cambridge study on where AI actually lifts productivity in finance. The product spotlight is Marqeta: issuer processing, just-in-time funding, and why the interchange maths does not travel to a regulated domestic-scheme market.</itunes:summary>
