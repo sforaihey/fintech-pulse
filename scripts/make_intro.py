@@ -98,6 +98,9 @@ def main() -> None:
         sys.exit("ELEVENLABS_API_KEY is not set")
 
     for name, spec in PIECES.items():
+        if (ASSETS / f"{name}.mp3").exists() and "--force" not in sys.argv:
+            print(f"  {name}: already present, keeping it (--force to replace)")
+            continue
         try:
             compose(name, spec, key)
         except urllib.error.HTTPError as exc:
