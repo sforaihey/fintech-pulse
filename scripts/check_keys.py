@@ -9,6 +9,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 EL = "https://api.elevenlabs.io/v1"
 VOICES_WANTED = ["Lauren", "Nate"]
