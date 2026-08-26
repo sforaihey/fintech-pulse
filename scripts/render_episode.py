@@ -25,7 +25,12 @@ WORK = REPO / ".render"
 CROSSFADE = 1.5   # seconds of overlap between music and speech
 
 API = "https://api.elevenlabs.io/v1"
-VOICES = {"DANA": "Matilda", "ADAM": "Eric"}
+# Explicit voice ids, chosen by ear. Names in the library are ambiguous
+# (there is more than one "Eric"), so the id is the source of truth.
+VOICES = {
+    "DANA": "uYXf8XasLslADfZ2MB4u",   # Hope
+    "ADAM": "uHu0tu8NXvFWhmnFp4ZR",   # Eric
+}
 MODEL_PREFERENCE = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5"]
 BITRATE = "96k"
 
@@ -59,17 +64,16 @@ def match_voice(wanted: str, catalogue: dict) -> str | None:
 
 
 def resolve_voices(key: str) -> dict:
-    catalogue = {v["name"].strip().lower(): v["voice_id"]
-                 for v in api_get("voices", key).get("voices", [])}
-    resolved = {}
-    for speaker, wanted in VOICES.items():
-        voice_id = match_voice(wanted, catalogue)
-        if not voice_id:
-            sys.exit(f"voice '{wanted}' not found. "
-                     f"Library holds: {', '.join(sorted(catalogue))}")
-        resolved[speaker] = voice_id
-        print(f"  {speaker} -> {wanted} ({voice_id})")
-    return resolved
+    """Confirm each configured voice id resolves, and report its real name."""
+    for speaker, voice_id in VOICES.items():
+        try:
+            name = api_get(f"voices/{voice_id}", key).get("name", "?")
+        except urllib.error.HTTPError as exc:
+            sys.exit(f"voice id {voice_id} for {speaker} is not reachable "
+                     f"(HTTP {exc.code}). Check the id and the key's Voices "
+                     f"permission.")
+        print(f"  {speaker} -> {name} ({voice_id})")
+    return dict(VOICES)
 
 
 def resolve_model(key: str) -> str:

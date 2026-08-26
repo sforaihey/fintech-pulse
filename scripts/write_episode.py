@@ -13,7 +13,7 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import anthropic
@@ -24,7 +24,10 @@ RAW = "https://raw.githubusercontent.com/sforaihey/fintech-pulse/main"
 
 RIYADH = timezone(timedelta(hours=3))
 MODEL = "claude-opus-5"
-CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "7500"))
+CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "11000"))
+# Backfill support: write an episode for a past date instead of today.
+EPISODE_DATE = os.environ.get("FINTECH_DATE", "")
+EPISODE_NUMBER = os.environ.get("FINTECH_EPISODE", "")
 
 SYSTEM = """You write "Fintech Pulse Daily", a two-host audio briefing for one \
 listener: a Saudi banking product manager who works in merchant acquiring and \
@@ -92,7 +95,8 @@ def build_prompt(number: int, today, covered: str) -> str:
     return f"""Write episode {number:02d} of Fintech Pulse Daily for \
 {today:%A %-d %B %Y} (Riyadh).
 
-Search the web for what actually happened in the last 24 hours, in two areas:
+Search the web for what actually happened ON THAT DAY and the day before it —
+not today's news, the news as it stood on {today:%-d %B %Y}. Two areas:
   (a) SAUDI ARABIA — SAMA regulation and licensing, local banks, payments,
       Saudi fintech funding, Vision 2030 financial-sector moves.
   (b) GLOBAL — anything materially important in payments, banking, crypto and
@@ -178,12 +182,16 @@ def main() -> None:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         sys.exit("ANTHROPIC_API_KEY is not set")
 
-    today = datetime.now(RIYADH).date()
-    if today.weekday() in (4, 5):
-        print(f"{today:%A} — the show runs Sunday to Thursday. Nothing to do.")
-        return
+    if EPISODE_DATE:
+        today = date.fromisoformat(EPISODE_DATE)
+        print(f"backfilling for {today:%A %-d %B %Y}")
+    else:
+        today = datetime.now(RIYADH).date()
+        if today.weekday() in (4, 5):
+            print(f"{today:%A} — the show runs Sunday to Thursday. Nothing to do.")
+            return
 
-    number = next_episode_number()
+    number = int(EPISODE_NUMBER) if EPISODE_NUMBER else next_episode_number()
     covered = fetch("docs/products-covered.md")
     print(f"writing episode {number:02d} for {today}")
 
