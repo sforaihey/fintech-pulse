@@ -5,3 +5,4 @@ Each run appends a row; `python3 scripts/credit_report.py` shows the burn rate.
 
 | Ep | Date | Characters | Length |
 |---:|------|-----------:|--------|
+| 04 | 2026-08-26 | 10957 | — |
