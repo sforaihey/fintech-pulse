@@ -27,6 +27,68 @@
       <itunes:category text="Investing"/>
     </itunes:category>
     <item>
+      <title>Ep. 04 — A Regulator Changes Hands, Stablecoins Keep Working</title>
+      <description>New leadership at Saudi Arabia's Capital Market Authority has foreign inflows back in the conversation, and Dana and Adam argue about whether a chairman actually moves anything. Then: SAMA's licensing drumbeat and Lean's Major Payment Institution permission, bitcoin slipping under eighty thousand dollars while stablecoins quietly do the work in Latin America, new AICPA accounting guidance, and a thin funding week carried by payments and AI. The product segment is Alloy — identity decisioning, and why corporate onboarding is a control system, not a connector.</description>
+      <itunes:summary>New leadership at Saudi Arabia's Capital Market Authority has foreign inflows back in the conversation, and Dana and Adam argue about whether a chairman actually moves anything. Then: SAMA's licensing drumbeat and Lean's Major Payment Institution permission, bitcoin slipping under eighty thousand dollars while stablecoins quietly do the work in Latin America, new AICPA accounting guidance, and a thin funding week carried by payments and AI. The product segment is Alloy — identity decisioning, and why corporate onboarding is a control system, not a connector.</itunes:summary>
+      <content:encoded><![CDATA[# Fintech Pulse Daily — Wednesday 26 August 2026
+
+## Cold open — the regulator, not the rails
+Bloomberg's Monday piece framed the Capital Market Authority leadership change as reviving "liberalisation optimism" and putting foreign inflows back in focus. Adam's first position — chairmen don't move markets, index inclusion and free float do — doesn't survive Dana's point that leadership sets approval tempo, and approval tempo lands in an operator's queue. Backdrop: the market has been open to all categories of foreign investors since 1 February 2026, and the Authority's stated priority in May was domestic listings to curb capital outflows.
+
+## Saudi — licensing keeps publishing
+- SAMA announced a BNPL licence for Daftar Technologies in July, taking licensed finance companies to 76. Adam's view: not all 76 survive independently; some licences are acquisition assets.
+- Lean Technologies received the Kingdom's first Major Payment Institution licence in March — the aggregator moving from *read* to *move*, which is exactly the Ep. 03 thesis about open banking moats.
+- Acquiring angle: every BNPL licence is one more settlement relationship and one more comparison against your merchant discount rate.
+
+## Global
+- Bitcoin slipped under US$80,000; the same market wrap notes stablecoins are the crypto product actually being used across Latin America.
+- AICPA issued new guidance covering stablecoins and mining revenue — accounting classification is a gate before treasury adoption.
+- A US credit union body pushed publicly for stablecoin rules and servicemember education protections. The lobbying is coming from deposit-takers now.
+- Earlier this summer: an executive order and regulatory proposals signalling broader payment-system access for fintechs and payment firms — a squeeze on the sponsor-bank model if it lands.
+- FinTech Global put last week's sector funding at roughly US$361m, driven by payments and AI. The signal is the concentration, not the total.
+
+## Product spotlight — Alloy
+**What it is:** an identity decisioning layer. Alloy doesn't run the checks; it orchestrates them, applies your rules, routes the exceptions and stores the evidence.
+
+**Flow:** application → workflow of vendor checks with branching → rules produce approve / decline / review → analyst queue showing every check, response and rule that fired → decision and rationale stored → ongoing monitoring after onboarding.
+
+**KYB:** entity verification → beneficial owners → individual KYC on each owner. The fan-out, and the linkage between checks, is why corporate onboarding takes days.
+
+**Money:** platform subscription plus per-application/per-decision pricing, vendor data costs passed through; land in onboarding, expand into fraud and credit. Vendor waterfalls (cheap check first) are a genuine cost lever.
+
+**Limits:** coverage is your vendors' coverage; single dependency in the path of every new customer, so treat it as a critical outsourced service with an exit plan; less differentiated in markets with a strong national identity and registry backbone; and it will execute bad policy faster and with better documentation.
+
+**Competitors:** Persona, Socure, Trulioo, Middesk, ComplyAdvantage, Unit21, Sardine, Hummingbird — and in-house origination stacks, which remain the category's largest competitor.
+
+**Lessons:** separate policy from plumbing; version and test your rules. And measure days-to-change-a-rule and files-per-analyst-hour, not approval rate.
+
+## Watchlist for tomorrow
+- Any concrete CMA output — a rule, a consultation, a listing — rather than statements of continuity.
+- Whether the bitcoin move under $80k drags on anything with real-economy exposure, or the stablecoin rails keep ignoring price.
+- Next SAMA licensing notices.
+
+## Sources
+- Bloomberg, 24 Aug 2026 — Saudi capital markets shakeup and foreign inflows: https://www.bloomberg.com/news/articles/2026-08-24/saudi-capital-markets-shakeup-puts-foreign-inflows-back-in-focus
+- AGBI — Saudi Arabia replaces head of capital markets regulator: https://www.agbi.com/finance/2026/08/saudi-arabia-replaces-head-of-capital-markets-regulator/
+- Saudi Gazette — New CMA chief vows to advance Saudi capital market development: https://saudigazette.com.sa/article/663788
+- Saudi Gazette — Market open to all foreign investors from 1 Feb 2026: https://www.saudigazette.com.sa/article/657982/SAUDI-ARABIA/Saudi-Arabia-opens-capital-market-to-all-foreign-investors
+- Arab News — CMA chief on prioritising domestic listings: https://www.arabnews.pk/node/2642383/business-economy
+- Arab News, 6 Jul 2026 — SAMA licenses Daftar Technologies for BNPL, finance firms reach 76: https://www.arabnews.com/node/2649862/business-economy
+- Finextra, 27 Mar 2026 — First Major Payment Institution licence to Lean Technologies: https://www.finextra.com/newsarticle/47504/saudi-arabia-issues-first-major-payment-institution-licence-to-lean-technologies
+- Rio Times, 26 Aug 2026 — Bitcoin slips under US$80,000; stablecoins in LatAm: https://www.riotimesonline.com/crypto-markets-bitcoin-majors-wednesday-august-26-2026/
+- Journal of Accountancy, 25 Aug 2026 — New AICPA guidance on stablecoins and mining revenue: https://www.journalofaccountancy.com/news/2026/aug/new-aicpa-guidance-on-stablecoins-mining-revenue-current-auditing-standards/
+- Credit Union Times, 25 Aug 2026 — DCUC pushes stablecoin rules: https://www.cutimes.com/2026/08/25/dcuc-pushes-stablecoin-rules-servicemember-education-protections/
+- Freshfields — Executive order and proposals on payment system access for fintechs: https://www.freshfields.com/en/our-thinking/blogs/a-fresh-take/knocking-at-the-feds-door-recent-executive-order-and-regulatory-proposals-signa-102n0qo
+- FinTech Global, 21 Aug 2026 — Payments and AI drive $361m in fintech funding this week: https://fintech.global/2026/08/21/payments-and-ai-drive-361m-in-fintech-funding-this-week/]]></content:encoded>
+      <pubDate>Wed, 26 Aug 2026 07:30:00 +0300</pubDate>
+      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep04.mp3" length="8809172" type="audio/mpeg"/>
+      <guid isPermaLink="false">fintech-pulse-ep04</guid>
+      <itunes:duration>00:12:10</itunes:duration>
+      <itunes:episode>4</itunes:episode>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
       <title>Ep. 03 — A New Chairman, Deposits Outrunning Loans, And Plaid</title>
       <description>A leadership change at Saudi Arabia's capital markets regulator has reopened the foreign-ownership question, while listed-bank deposits outgrew lending for a second straight quarter and weekly POS spending held above three and a half billion dollars on a surge in school fees. Globally: Fintech Galaxy's in-principle nod from the UAE central bank for open finance, Fitch on a three-hundred-and-twenty-billion-dollar UAE debt market, Rabobank's two-billion-euro AI commitment, and a Tokyo convenience-store chain running stablecoins through ordinary POS registers. The product spotlight is Plaid — what a bank-data network actually sells, and why the consent screen is the real product.</description>
       <itunes:summary>A leadership change at Saudi Arabia's capital markets regulator has reopened the foreign-ownership question, while listed-bank deposits outgrew lending for a second straight quarter and weekly POS spending held above three and a half billion dollars on a surge in school fees. Globally: Fintech Galaxy's in-principle nod from the UAE central bank for open finance, Fitch on a three-hundred-and-twenty-billion-dollar UAE debt market, Rabobank's two-billion-euro AI commitment, and a Tokyo convenience-store chain running stablecoins through ordinary POS registers. The product spotlight is Plaid — what a bank-data network actually sells, and why the consent screen is the real product.</itunes:summary>
