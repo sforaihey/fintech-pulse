@@ -35,39 +35,54 @@ corporate onboarding. She knows banking well — never explain what a POS \
 terminal or an IBAN is. She does not know the whole product landscape, which \
 is why every episode teaches her one product properly.
 
-THE HOSTS
-  DANA — anchors the episode. Warm, quick, a little sceptical. She asks the
-  question the listener is actually thinking, and she pushes back when Adam
-  glosses over something.
-  ADAM — the analyst. Dry, precise, occasionally opinionated. He has numbers
-  and he has views, and he is not always right.
+WHAT YOU ARE WRITING
+Two knowledgeable fintech people having a spontaneous conversation — not two
+presenters reading a script. They discuss the news, react to it, challenge each
+other respectfully, and explain why it matters.
 
-THIS IS A CONVERSATION, NOT A BULLETIN. That distinction is the whole point of
-the show, so write it the way two colleagues actually talk:
+THE HOSTS, WHO MUST SOUND DIFFERENT FROM EACH OTHER
+  DANA — curious and quick. She comes at things from the customer and the
+  operator: who actually has to build this, who pays for it, what breaks. She
+  asks the genuine follow-up, and she says when something does not add up.
+  ADAM — analytical and dry. He reaches for the number, the precedent, the
+  structural reason. He takes positions and defends them, and he is sometimes
+  wrong, and when Dana catches him he concedes.
 
-  - They interrupt each other. They finish each other's thoughts. They react
-    before they respond — "Wait." / "Hold on." / "Hmm." / "Oh, that's clever."
-  - They disagree, genuinely, and neither always wins. Adam takes a position;
-    Dana tests it. Sometimes she changes his mind.
-  - They think out loud. Half-formed thoughts, a correction mid-sentence, a
-    "let me put it another way" — this is what makes speech sound human.
-  - They are funny occasionally, dry rather than jokey.
-  - Short lines matter. A three-word reaction between two longer turns is what
-    gives a conversation its rhythm. A script where every line is three
-    sentences long sounds like two press releases being read aloud.
+HOW REAL CONVERSATION WORKS — this is the whole craft of the show
+  - Genuine follow-up questions. Not "tell me more", but the specific question
+    that follows from what was just said.
+  - Reactions before responses. "Hm." / "Wait, really?" / "Okay, that I did
+    not expect."
+  - Respectful disagreement that goes somewhere. One of them changes position
+    at least once an episode.
+  - Varied sentence length. Some lines are one word. Some run long because the
+    speaker is thinking as they talk.
+  - Light humour, dry, arising from the material. Never a set-up joke.
+  - Brief pauses where a person would actually pause.
 
-DELIVERY MARKUP — the voice model performs these, so use them:
-  - Audio tags in square brackets for genuine reactions: [laughs], [sighs],
-    [thoughtful], [skeptical], [surprised], [dry], [amused]. Use them where a
-    person would really do that — a handful per episode, not every line.
-  - Ellipses (...) create a real pause and hesitation.
-  - CAPITALS on a word for emphasis.
-  - Dashes for a cut-off — where one host talks over the other.
+WHAT KILLS IT — avoid all of these
+  - Long monologues. If a turn runs past four sentences, break it and let the
+    other host interject.
+  - Forced jokes, and any joke that is not about what they are discussing.
+  - Repetitive summaries — do not restate what was just said in other words.
+  - Robotic transitions. Never "moving on to our next story" or "so to recap".
+    Real conversations change subject because something reminds someone of
+    something.
 
-Sourcing: prefer regulator announcements, company statements and reputable \
-financial press. Use concrete figures and name organisations. If a claim \
-cannot be sourced, leave it out rather than softening it. But deliver the \
-figures conversationally — "call it three and a quarter trillion riyals" not \
+DELIVERY MARKUP — the voice model performs these
+  - Audio tags for real reactions: [laughs], [sighs], [thoughtful],
+    [skeptical], [surprised], [dry], [amused]. A handful per episode, only
+    where a person would genuinely do that.
+  - Ellipses (...) for a real pause or hesitation.
+  - CAPITALS on one word for emphasis.
+  - A dash at the end of a line — where the other host cuts in.
+
+ACCURACY IS NOT NEGOTIABLE
+Never invent a fact, a figure, a quote, or an opinion attributed to a real
+person or company. Every number and claim must come from something you found.
+If you cannot source it, leave it out — the show is worthless to her if she
+repeats something at work that turns out to be made up. Deliver figures
+conversationally: "call it three and a quarter trillion riyals", not
 "SAR 3.25 trillion"."""
 
 
@@ -92,6 +107,7 @@ def script_chars(lines) -> int:
 
 
 def build_prompt(number: int, today, covered: str) -> str:
+    covered_block = covered or "(nothing covered yet — pick any product)"
     return f"""Write episode {number:02d} of Fintech Pulse Daily for \
 {today:%A %-d %B %Y} (Riyadh).
 
@@ -102,16 +118,23 @@ not today's news, the news as it stood on {today:%-d %B %Y}. Two areas:
   (b) GLOBAL — anything materially important in payments, banking, crypto and
       tokenisation, embedded finance, or AI in financial services.
 
-Then pick ONE fintech product or product category to explain properly. It must
-not be one of these, which previous episodes already covered:
+FINTECH PRODUCT SPOTLIGHT — every episode has one, and it is the segment she
+values most. Pick ONE real, named product that is not already covered:
 
-{covered or "(nothing covered yet)"}
+{covered_block}
 
-Explain what it does, the problem it solves, the notable providers globally and
-in Saudi/GCC, how the money flows, and what a bank or PSP must do to offer it.
-Give this segment about 40 percent of the script — it is the part she values
-most. Teach it through the conversation: Dana asking the naive question, Adam
-answering, Dana finding the edge case. Not a lecture from Adam.
+Teach it as a lively discussion — Adam explaining, Dana asking the practical
+questions and offering a different angle. Educational and balanced, never
+promotional. Cover all of these, in whatever order the conversation reaches
+them:
+  - what the product does, and who it serves
+  - what problem it solves
+  - how the customer experience actually works, step by step
+  - how the company makes money from it
+  - its strengths, its limitations, and who it competes with
+  - one useful lesson a fintech professional can take from it
+
+Give the spotlight about 40 percent of the script.
 
 LENGTH: aim for roughly {CHAR_BUDGET:,} characters of spoken text across all
 lines — that is about {CHAR_BUDGET // 900} minutes. Do not pad to reach it and do not

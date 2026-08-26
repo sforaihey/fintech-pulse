@@ -28,8 +28,8 @@ API = "https://api.elevenlabs.io/v1"
 # Explicit voice ids, chosen by ear. Names in the library are ambiguous
 # (there is more than one "Eric"), so the id is the source of truth.
 VOICES = {
-    "DANA": "uYXf8XasLslADfZ2MB4u",   # Hope
-    "ADAM": "uHu0tu8NXvFWhmnFp4ZR",   # Eric
+    "DANA": "OZxMHsGaBmV5pjMIDIn0",
+    "ADAM": "UgBBYS2sOqTuMpoF3BR0",
 }
 MODEL_PREFERENCE = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5"]
 BITRATE = "96k"
