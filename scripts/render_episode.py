@@ -22,7 +22,12 @@ EPISODE = REPO / "episode.json"
 INCOMING = REPO / "incoming"
 ASSETS = REPO / "assets"
 WORK = REPO / ".render"
-CROSSFADE = 1.5   # seconds of overlap between music and speech
+# The music fades; the speech never does. acrossfade would fade BOTH sides,
+# which buries the first words of the episode under the intro.
+INTRO_FADE = 2.0     # music fades out over this long
+INTRO_OVERLAP = 1.1  # speech starts this early, at full volume, under the tail
+OUTRO_OVERLAP = 0.4  # outro begins just as the last word lands
+OUTRO_FADE_IN = 0.8
 
 API = "https://api.elevenlabs.io/v1"
 # Explicit voice ids, chosen by ear. Names in the library are ambiguous
@@ -141,35 +146,59 @@ def speak_dialogue(inputs, model: str, key: str, dest: Path) -> None:
         dest.write_bytes(response.read())
 
 
+def audio_seconds(path: Path) -> float:
+    return float(subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+        check=True, capture_output=True, text=True).stdout)
+
+
 def dress(body: Path, out: Path) -> None:
-    """Top and tail the episode with the theme music, crossfaded.
+    """Top and tail the episode with the theme music.
 
-    A hard cut from music into speech sounds amateur; overlapping them by a
-    second and a half is what makes it sound produced.
+    The speech is never faded and never delayed into a fade — it begins at
+    full volume while the intro's tail is still ringing out underneath it.
+    Anything else clips the first words, which is what a crossfade does.
     """
-    parts = [p for p in (ASSETS / "intro.mp3", body, ASSETS / "outro.mp3")
-             if p.exists()]
-
-    if len(parts) == 1:
+    intro, outro = ASSETS / "intro.mp3", ASSETS / "outro.mp3"
+    if not intro.exists() and not outro.exists():
         shutil.copy(body, out)
         print("  no music in assets/ — published without a theme")
         return
 
     args = ["ffmpeg", "-y", "-loglevel", "error"]
-    for part in parts:
-        args += ["-i", str(part)]
+    filters, mixes = [], []
+    body_start = 0.0
 
-    filters, label = [], "[0:a]"
-    for position in range(1, len(parts)):
-        nxt = f"[x{position}]"
+    if intro.exists():
+        intro_len = audio_seconds(intro)
+        body_start = max(0.0, intro_len - INTRO_OVERLAP)
+        args += ["-i", str(intro)]
         filters.append(
-            f"{label}[{position}:a]acrossfade=d={CROSSFADE}:c1=tri:c2=tri{nxt}")
-        label = nxt
+            f"[{len(mixes)}:a]afade=t=out:st={intro_len - INTRO_FADE:.2f}:"
+            f"d={INTRO_FADE}[i]")
+        mixes.append("[i]")
 
-    args += ["-filter_complex", ";".join(filters), "-map", label,
+    args += ["-i", str(body)]
+    delay = int(body_start * 1000)
+    filters.append(f"[{len(mixes)}:a]adelay={delay}|{delay}[b]")
+    mixes.append("[b]")
+
+    if outro.exists():
+        outro_at = int((body_start + audio_seconds(body) - OUTRO_OVERLAP) * 1000)
+        args += ["-i", str(outro)]
+        filters.append(
+            f"[{len(mixes)}:a]afade=t=in:st=0:d={OUTRO_FADE_IN},"
+            f"adelay={outro_at}|{outro_at}[o]")
+        mixes.append("[o]")
+
+    filters.append(f"{''.join(mixes)}amix=inputs={len(mixes)}:"
+                   f"duration=longest:dropout_transition=0:normalize=0[a]")
+    args += ["-filter_complex", ";".join(filters), "-map", "[a]",
              "-c:a", "libmp3lame", "-b:a", BITRATE, str(out)]
     subprocess.run(args, check=True)
-    print(f"  music: {' + '.join(part.stem for part in parts)}")
+    print(f"  music: intro fades out, speech starts clean at "
+          f"{body_start:.1f}s, outro tails in")
 
 
 def main() -> None:
