@@ -25,34 +25,32 @@ OUT = REPO / "sample-ar"
 WORK = REPO / ".sample-ar"
 
 VOICES = {
-    "علي": "MI88rOZjXbH22N8KHXUo",     # anchor
-    "سعود": "3nav5pHC1EYvWOd5LmnA",    # analyst
+    "سلطان": "rUaPbzcZIu8df8iNL9WZ",   # anchor
+    "فيصل": "wyC6KvCMTAXGbiCKlfSx",    # analyst
 }
 
 # The reviewed script, with the hosts renamed for two male voices. English
 # technical terms are left in English, which is how the conversation would
 # actually happen in Riyadh -- and is the hardest thing for Arabic TTS.
 SCRIPT = [
-    ("علي", "طيب، ساما فتحت الترخيص للـ open banking رسمياً. طلعوا من الـ sandbox."),
-    ("سعود", "ايه. وهذي مو خطوة صغيرة ترى."),
-    ("علي", "وش يعني عملياً للبنك؟"),
-    ("سعود", "يعني الحين أي شركة fintech تبي توصل لبيانات العميل لازم يكون عندها ترخيص كامل. مو تجربة."),
-    ("علي", "طيب بس... البنوك وش يستفيدون؟ هم اللي يفتحون بياناتهم."),
-    ("سعود", "[dry] هذا السؤال الصح. نظرياً سرعة في الـ onboarding. عملياً ضغط تنافسي."),
-    ("علي", "كذا أنا أشوفها. تفتح الـ API وتصير أنت الـ infrastructure، وغيرك ياخذ العميل."),
-    ("سعود", "...صح. هذي نقطة."),
-    ("علي", "وتدري وش اللي يخوف أكثر؟ الـ consent management. لو العميل ما فهم وش وافق عليه، المشكلة ترجع للبنك مو للـ fintech."),
-    ("سعود", "والمنظم بيسأل البنك أول."),
-    ("علي", "بالضبط."),
-    ("سعود", "تمارا مثلاً — إيراد الربع الثاني سبعمية وسبعة مليون ريال، زيادة مية واثنين وخمسين بالمية."),
-    ("علي", "[surprised] كم؟"),
-    ("سعود", "بس صافي الربح نزل. أربعة وثمانين مليون، نازل اثنين وثلاثين بالمية."),
+    ("سلطان", "طيب، ساما فتحت الترخيص للـ open banking رسمياً. طلعوا من الـ sandbox."),
+    ("فيصل", "[thoughtful] ايه... وهذي مو خطوة صغيرة ترى."),
+    ("سلطان", "وش يعني عملياً للبنك؟"),
+    ("فيصل", "يعني الحين أي شركة fintech تبي توصل لبيانات العميل لازم يكون عندها ترخيص كامل. مو تجربة."),
+    ("سلطان", "[skeptical] طيب بس... البنوك وش يستفيدون؟ هم اللي يفتحون بياناتهم."),
+    ("فيصل", "[dry] هذا السؤال الصح. نظرياً سرعة في الـ onboarding. عملياً ضغط تنافسي."),
+    ("سلطان", "كذا أنا أشوفها. تفتح الـ API وتصير أنت الـ infrastructure، وغيرك ياخذ العميل."),
+    ("فيصل", "...صح. هذي نقطة."),
+    ("سلطان", "وتدري وش اللي يخوف أكثر؟ الـ consent management. لو العميل ما فهم وش وافق عليه، المشكلة ترجع للبنك مو للـ fintech."),
+    ("فيصل", "[dry] والمنظم بيسأل البنك أول."),
+    ("سلطان", "[amused] بالضبط."),
+    ("فيصل", "تمارا مثلاً — إيراد الربع الثاني سبعمية وسبعة مليون ريال، زيادة مية واثنين وخمسين بالمية."),
+    ("سلطان", "[surprised] كم؟"),
+    ("فيصل", "بس صافي الربح نزل. أربعة وثمانين مليون، نازل اثنين وثلاثين بالمية."),
 ]
 
 VARIANTS = [
-    ("a-dialogue-ar", "Dialogue endpoint, language set to Arabic", "dialogue", "ar"),
-    ("b-dialogue-auto", "Dialogue endpoint, language auto-detected", "dialogue", None),
-    ("c-lines-ar", "Line by line, language set to Arabic", "lines", "ar"),
+    ("sultan-faisal", "Sultan and Faisal — dialogue, Arabic", "dialogue", "ar"),
 ]
 
 
@@ -149,12 +147,10 @@ def page(rendered):
              color:#93a1ba; font-size:.92rem; margin:0 0 2rem; }}
 </style>
 <main>
-  <h1>Arabic test — Najdi</h1>
-  <p class="lede">The script you already read, spoken by Ali and Saud. Three
-     renders of the same words.</p>
-  <p class="listen">Listen for three things: whether the numbers are said
-     correctly, whether the English terms survive, and whether you can tell
-     the two voices apart.</p>
+  <h1>Arabic test — Sultan and Faisal</h1>
+  <p class="lede">The same Najdi script, one straight render with expressions.</p>
+  <p class="listen">Listen for the accent, the spoken numbers, whether the
+     English terms survive, and whether the two voices are distinct.</p>
 {clips}
   <h2>النص</h2>
   <div class="script">
