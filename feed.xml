@@ -26,44 +26,6 @@
     <itunes:category text="Business">
       <itunes:category text="Investing"/>
     </itunes:category>
-    <item>
-      <title>Ep. 03 - 25 Aug 2026</title>
-      <description>Today's Saudi and global fintech news, plus a product explainer segment.</description>
-      <itunes:summary>Today's Saudi and global fintech news, plus a product explainer segment.</itunes:summary>
-      <content:encoded><![CDATA[Today's Saudi and global fintech news, plus a product explainer segment.]]></content:encoded>
-      <pubDate>Tue, 25 Aug 2026 07:30:00 +0300</pubDate>
-      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep03.mp3" length="12527823" type="audio/mpeg"/>
-      <guid isPermaLink="false">fintech-pulse-ep03</guid>
-      <itunes:duration>00:13:00</itunes:duration>
-      <itunes:episode>3</itunes:episode>
-      <itunes:episodeType>full</itunes:episodeType>
-      <itunes:explicit>false</itunes:explicit>
-    </item>
-    <item>
-      <title>Ep. 02 - 25 Aug 2026</title>
-      <description>Today's fintech briefing.</description>
-      <itunes:summary>Today's fintech briefing.</itunes:summary>
-      <content:encoded><![CDATA[Today's fintech briefing.]]></content:encoded>
-      <pubDate>Tue, 25 Aug 2026 07:30:00 +0300</pubDate>
-      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep02.mp3" length="8554030" type="audio/mpeg"/>
-      <guid isPermaLink="false">fintech-pulse-ep02</guid>
-      <itunes:duration>00:11:49</itunes:duration>
-      <itunes:episode>2</itunes:episode>
-      <itunes:episodeType>full</itunes:episodeType>
-      <itunes:explicit>false</itunes:explicit>
-    </item>
-    <item>
-      <title>Ep. 01 - 24 Aug 2026</title>
-      <description>Today's fintech briefing.</description>
-      <itunes:summary>Today's fintech briefing.</itunes:summary>
-      <content:encoded><![CDATA[Today's fintech briefing.]]></content:encoded>
-      <pubDate>Mon, 24 Aug 2026 07:30:00 +0300</pubDate>
-      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep01.mp3" length="9465599" type="audio/mpeg"/>
-      <guid isPermaLink="false">fintech-pulse-ep01</guid>
-      <itunes:duration>00:13:05</itunes:duration>
-      <itunes:episode>1</itunes:episode>
-      <itunes:episodeType>full</itunes:episodeType>
-      <itunes:explicit>false</itunes:explicit>
-    </item>
+
   </channel>
 </rss>
