@@ -83,10 +83,10 @@ def build_ident(key: str) -> None:
          "-filter_complex",
          f"[0:a]volume={MUSIC_UNDER}[m];"
          f"[1:a]adelay={IDENT_DELAY_MS}|{IDENT_DELAY_MS},volume=1.35[v];"
-         # amix halves levels unless told not to; the 1.4 restores the bed
+         # amix halves levels unless told not to; the boost restores the bed
          # to roughly its original loudness with headroom to spare.
          f"[m][v]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
-         f"volume=1.4[a]",
+         f"volume=1.2[a]",
          "-map", "[a]", "-c:a", "libmp3lame", "-b:a", "192k", str(out)],
         check=True)
     print(f"  intro: music + voice -> {out.relative_to(ASSETS.parent)}")
