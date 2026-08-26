@@ -40,6 +40,18 @@ if f"| {number} |" not in text:
     log.write_text(f"{text}\n| {number} | {date} | {ep['characters']} | — |\n")
     print(f"logged spend: {ep['characters']:,} characters")
 
+stories_path = REPO / "docs" / "recent-stories.md"
+header = "# Recently reported\n\nThe writer reads this to avoid re-reporting.\n"
+existing = stories_path.read_text() if stories_path.exists() else header
+if f"## Ep. {number}" not in existing:
+    block = f"\n## Ep. {number} ({date})\n" + "".join(
+        f"- {s}\n" for s in ep.get("stories", []))
+    # Keep only the last four episodes: older news is fair to revisit.
+    parts = (existing + block).split("\n## ")
+    trimmed = parts[0] + "".join(f"\n## {p}" for p in parts[1:][-4:])
+    stories_path.write_text(trimmed)
+    print(f"recorded {len(ep.get('stories', []))} stories for ep {number}")
+
 notes = REPO / "docs" / "notes" / f"ep{number}.md"
 notes.parent.mkdir(exist_ok=True)
 notes.write_text(f"# Ep. {number} — {date}\n\n{ep.get('notes', '')}\n")

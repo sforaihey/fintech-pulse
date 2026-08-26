@@ -106,13 +106,30 @@ def script_chars(lines) -> int:
     return sum(len(line["text"]) for line in lines)
 
 
-def build_prompt(number: int, today, covered: str) -> str:
+def previous_publishing_day(day):
+    """The last Sunday-to-Thursday day before `day`."""
+    earlier = day - timedelta(days=1)
+    while earlier.weekday() in (4, 5):
+        earlier -= timedelta(days=1)
+    return earlier
+
+
+def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
     covered_block = covered or "(nothing covered yet — pick any product)"
+    since = previous_publishing_day(today)
+    span = (today - since).days
+    window = (f"since the previous episode went out on {since:%A %-d %B} — that "
+              f"is {span} day{'s' if span > 1 else ''} of news, including the "
+              f"weekend" if span > 1 else
+              f"since the previous episode went out on {since:%A %-d %B}")
+    recent_block = recent or "(no earlier episodes)"
     return f"""Write episode {number:02d} of Fintech Pulse Daily for \
 {today:%A %-d %B %Y} (Riyadh).
 
-Search the web for what actually happened ON THAT DAY and the day before it —
-not today's news, the news as it stood on {today:%-d %B %Y}. Two areas:
+Search the web for what happened {window}, up to the morning of
+{today:%-d %B %Y}. Report the news as it stood then, not as it stands now.
+Nothing that happened over a Friday or Saturday should be lost — if this
+episode follows a weekend, those two days are part of your window. Two areas:
   (a) SAUDI ARABIA — SAMA regulation and licensing, local banks, payments,
       Saudi fintech funding, Vision 2030 financial-sector moves.
   (b) GLOBAL — anything materially important in payments, banking, crypto and
@@ -143,6 +160,12 @@ land near that mark. Aim for 70 to 100 lines, deliberately uneven in length.
 
 Running order: short cold open on the biggest story, Saudi news, global news,
 the product segment, then a brief close on what to watch tomorrow.
+
+ALREADY REPORTED in recent episodes — do not re-report these as if they were
+new. You may return to one only if there is genuinely new information today,
+and if you do, lead with what changed rather than restating the story:
+
+{recent_block}
 
 Reply with ONLY a JSON object in a ```json fence:
 {{
@@ -225,10 +248,11 @@ def main() -> None:
 
     number = int(EPISODE_NUMBER) if EPISODE_NUMBER else next_episode_number()
     covered = fetch("docs/products-covered.md")
+    recent = fetch("docs/recent-stories.md")
     print(f"writing episode {number:02d} for {today}")
 
     client = anthropic.Anthropic(timeout=900.0)
-    message = call_claude(client, build_prompt(number, today, covered))
+    message = call_claude(client, build_prompt(number, today, covered, recent))
     episode = extract_json(message)
 
     used = script_chars(episode["lines"])
