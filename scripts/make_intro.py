@@ -8,6 +8,7 @@ Needs ELEVENLABS_API_KEY with the Music Generation permission.
 
 import json
 import os
+import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -16,8 +17,15 @@ from pathlib import Path
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 API = "https://api.elevenlabs.io/v1/music"
 
+# The show ident: a voice over the top of the opening music, so the intro is
+# not a bare instrumental. Spoken by Dana, for continuity with the show.
+IDENT_TEXT = os.environ.get("FINTECH_IDENT", "Fintech Pulse Daily.")
+IDENT_VOICE = "OZxMHsGaBmV5pjMIDIn0"
+IDENT_DELAY_MS = 2200   # let the music establish before the voice lands
+MUSIC_UNDER = 0.62      # music level while the voice is over it
+
 PIECES = {
-    "intro": {
+    "intro-music": {
         "ms": 11000,
         "prompt": (
             "Short broadcast news theme for a daily financial markets podcast. "
@@ -59,15 +67,37 @@ def compose(name: str, spec: dict, key: str) -> Path:
     return dest
 
 
+def build_ident(key: str) -> None:
+    """Speak the show name over the opening music."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from render_episode import resolve_model, speak
+
+    voice = ASSETS / "ident-vo.mp3"
+    speak(IDENT_TEXT, IDENT_VOICE, resolve_model(key), key, voice)
+    print(f"  ident: \"{IDENT_TEXT}\"")
+
+    music, out = ASSETS / "intro-music.mp3", ASSETS / "intro.mp3"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-i", str(music), "-i", str(voice),
+         "-filter_complex",
+         f"[0:a]volume={MUSIC_UNDER}[m];"
+         f"[1:a]adelay={IDENT_DELAY_MS}|{IDENT_DELAY_MS},volume=1.35[v];"
+         # amix halves levels unless told not to; the 1.4 restores the bed
+         # to roughly its original loudness with headroom to spare.
+         f"[m][v]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
+         f"volume=1.4[a]",
+         "-map", "[a]", "-c:a", "libmp3lame", "-b:a", "192k", str(out)],
+        check=True)
+    print(f"  intro: music + voice -> {out.relative_to(ASSETS.parent)}")
+
+
 def main() -> None:
     key = os.environ.get("ELEVENLABS_API_KEY")
     if not key:
         sys.exit("ELEVENLABS_API_KEY is not set")
 
-    only = sys.argv[1] if len(sys.argv) > 1 else None
     for name, spec in PIECES.items():
-        if only and name != only:
-            continue
         try:
             compose(name, spec, key)
         except urllib.error.HTTPError as exc:
@@ -77,6 +107,7 @@ def main() -> None:
                          f"'Music Generation' permission.\n{detail}")
             sys.exit(f"HTTP {exc.code}: {detail}")
 
+    build_ident(key)
     print("\nDone. Commit assets/ — episodes use these from now on.")
 
 
