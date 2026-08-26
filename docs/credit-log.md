@@ -11,3 +11,4 @@ The scheduled task appends a row here after each episode; run
 | 03 | 2026-08-25 | 11876 | 13:00 |
 | 04 | 2026-08-26 | 4117 | — |
 | 05 | 2026-08-26 | 4790 | — |
+| 06 | 2026-08-26 | 8413 | — |
