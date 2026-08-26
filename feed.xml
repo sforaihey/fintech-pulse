@@ -26,59 +26,6 @@
     <itunes:category text="Business">
       <itunes:category text="Investing"/>
     </itunes:category>
-    <item>
-      <title>Ep. 04 — Deposits Outrun Loans While London's Funding Dries Up</title>
-      <description>UK fintech funding has fallen to its lowest level in a decade — £1.8bn in the first half of 2026 — even as global fintech investment surged, with the money rotating hard into AI. At home, Al Rajhi Capital's read on the ten listed Saudi banks shows net loans at SR3.25 trillion and deposits growing faster than lending for a second straight quarter, alongside a SR9.52bn August sukuk. Plus Barclays, Citi, Deutsche Bank and Standard Chartered adopting Ant International's FalconTST 2.0 forecasting model, the first live cross-border tokenised deposit over Swift's ledger, and a full explainer on virtual accounts and virtual IBANs.</description>
-      <itunes:summary>UK fintech funding has fallen to its lowest level in a decade — £1.8bn in the first half of 2026 — even as global fintech investment surged, with the money rotating hard into AI. At home, Al Rajhi Capital's read on the ten listed Saudi banks shows net loans at SR3.25 trillion and deposits growing faster than lending for a second straight quarter, alongside a SR9.52bn August sukuk. Plus Barclays, Citi, Deutsche Bank and Standard Chartered adopting Ant International's FalconTST 2.0 forecasting model, the first live cross-border tokenised deposit over Swift's ledger, and a full explainer on virtual accounts and virtual IBANs.</itunes:summary>
-      <content:encoded><![CDATA[# Deposits Outrun Loans While London's Funding Dries Up
-**Fintech Pulse Daily — Wednesday 26 August 2026, Riyadh**
 
-## Running order
-
-**Cold open — UK fintech funding hits a decade low.** KPMG's Pulse of Fintech puts UK fintech investment at £1.8bn in H1 2026, down around two-thirds from £5.0bn in H1 2025 and the lowest since the report began in 2016. Global fintech funding over the same period rose to roughly £75.8bn. The money didn't leave the sector — it rotated to AI.
-
-**Saudi.**
-- Al Rajhi Capital: net loans at the ten listed banks up 7% y/y to SR3.25tn ($865.2bn) at end-Q2; deposits up 9% to SR3.15tn; aggregate loan-to-deposit ratio 103%. Deposit growth has outpaced lending for a second consecutive quarter.
-- August sukuk issuance: SR9.52bn ($2.54bn), up 77.94% on July.
-- Weekly POS: SR14.60bn ($3.89bn) across 253.4m transactions, down 10.5% on a back-to-school-inflated prior week of SR16.31bn.
-- Context: SAMA began licensing fintechs for open banking services in March 2026 after the sandbox phase closed — a supervised activity now, not a test permission.
-
-**Global.**
-- Ant International's FalconTST 2.0 time-series model posted a state-of-the-art MASE score and has been integrated by Barclays, Citi, Deutsche Bank and Standard Chartered for cashflow forecasting and FX management.
-- Rabobank has committed up to €2bn over three years to data, technology and AI.
-- HSBC and Standard Chartered executed the first live cross-border tokenised deposit transaction on Swift's blockchain-based ledger.
-- NETSTARS and Lawson ran a second in-store stablecoin trial in Tokyo — USDC and USDT across several chains, JPYC on Polygon, paid from MetaMask wallets.
-
-## Product segment — virtual accounts / virtual IBANs
-
-**What it is.** One real master account at a bank; many addressable virtual account numbers minted under the bank's BIC that resolve to it. No money ever sits "in" a virtual IBAN.
-
-**The problem it solves.** Incoming credits carry payer identity in a free-text reference field that humans mangle. Give every payer or client its own virtual account number and identity arrives in the structured, validated beneficiary field — reconciliation becomes account matching rather than string matching.
-
-**Providers.** Transaction banks: J.P. Morgan, Citi, HSBC, Deutsche Bank. Newer rails: ClearBank, Modulr, Banking Circle, LHV, Airwallex, Nium. Engines behind the banks: Cashfac, Montran, core banking suites. In the Gulf, typically embedded in corporate cash management; demand increasingly from platforms, marketplaces, PayFacs, property managers and insurers rather than group treasurers.
-
-**Bank/PSP build list.** (1) Generation and registry service — structurally valid, unique, never reused. (2) Real-time posting and allocation, not overnight batch. (3) Per-virtual-account reporting, ISO 20022 camt with the virtual account as account identifier. (4) Pooling and interest attribution at the master — the commercial hook.
-
-**Where it bites.** Beneficiary name-check mismatches when the master is in the PSP's name; KYC/AML ownership when one contractual client fronts thousands of sub-account holders (the EBA has reported on cross-border vIBAN supervisory blind spots); safeguarding of pooled client money; and the returns path, which most first builds get wrong.
-
-## Sources
-- KPMG UK — Pulse of Fintech, H1 2026: https://kpmg.com/uk/en/media/press-releases/2026/08/uk-fintech-funding-drops-to-a-decade-low.html
-- Finextra — UK fintech funding hits lowest level in a decade: https://www.finextra.com/newsarticle/48285/uk-fintech-funding-hits-lowest-level-in-a-decade
-- Bloomberg — UK Fintech Funding Drops to Lowest Level in At Least a Decade: https://www.bloomberg.com/news/articles/2026-08-23/uk-fintech-funding-drops-to-lowest-level-in-at-least-a-decade
-- Arab News — Saudi listed banks' net loans rise 7% to $865.2bn in Q2: https://www.arabnews.com/node/2655204/business-economy
-- Arab News — Saudi Arabia raises $2.54bn in August sukuk issuance: https://www.arabnews.com/node/2655175/business-economy
-- Saudi Gazette / Arab News — weekly POS data from SAMA: https://www.arabnews.com/node/2654623/amp
-- SAMA — Commencement of licensing of fintech companies for open banking services: https://www.sama.gov.sa/en-US/MediaCenter/News/pages/news-1135.aspx
-- Ant International — FalconTST Model 2.0 achieves SOTA: https://www.ant-intl.com/en/news/detail/?id=ant-internationals-falcon-tst-model-2-0-achieves-sota-elevating-predictive-ai-application-in-finance-to-new-levels
-- FinTech Futures — Rabobank commits €2bn to three-year AI strategy: https://www.fintechfutures.com/ai-in-fintech/rabobank-2bn-ai-commitment
-- Mintmark Brief — stablecoins & tokenisation, week ending 21 Aug 2026 (Swift tokenised deposit, Lawson/NETSTARS trial): https://buttondown.com/mintmarkresearch/archive/weekly-briefing-2026-08-21/]]></content:encoded>
-      <pubDate>Wed, 26 Aug 2026 07:30:00 +0300</pubDate>
-      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep04.mp3" length="9521532" type="audio/mpeg"/>
-      <guid isPermaLink="false">fintech-pulse-ep04</guid>
-      <itunes:duration>00:13:10</itunes:duration>
-      <itunes:episode>4</itunes:episode>
-      <itunes:episodeType>full</itunes:episodeType>
-      <itunes:explicit>false</itunes:explicit>
-    </item>
   </channel>
 </rss>
