@@ -66,8 +66,23 @@ def check_elevenlabs(key: str) -> None:
         result("Models", False,
                f"HTTP {exc.code} — enable the 'Models' permission")
 
-    print("  note: Text to Speech cannot be verified without spending credits;\n"
-          "        make sure it is set to Access.")
+    from render_episode import VOICES, resolve_model, speak
+    import tempfile
+    try:
+        model = resolve_model(key)
+    except SystemExit:
+        model = "eleven_v3"
+    for speaker, voice_id in VOICES.items():
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".mp3") as tmp:
+                speak("Testing.", voice_id, model, key, Path(tmp.name))
+                size = Path(tmp.name).stat().st_size
+            result(f"Voice {speaker} ({voice_id})", size > 1000,
+                   f"synthesised {size:,} bytes")
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", "replace")[:200]
+            result(f"Voice {speaker} ({voice_id})", False,
+                   f"HTTP {exc.code} — {detail}")
 
 
 def check_anthropic(key: str) -> None:

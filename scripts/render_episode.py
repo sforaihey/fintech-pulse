@@ -68,11 +68,12 @@ def resolve_voices(key: str) -> dict:
     for speaker, voice_id in VOICES.items():
         try:
             name = api_get(f"voices/{voice_id}", key).get("name", "?")
+            print(f"  {speaker} -> {name} ({voice_id})")
         except urllib.error.HTTPError as exc:
-            sys.exit(f"voice id {voice_id} for {speaker} is not reachable "
-                     f"(HTTP {exc.code}). Check the id and the key's Voices "
-                     f"permission.")
-        print(f"  {speaker} -> {name} ({voice_id})")
+            # Premade voices synthesise fine without being in the library, so
+            # a failed lookup is not a reason to abandon a written episode.
+            print(f"  {speaker} -> {voice_id} (not in library, HTTP "
+                  f"{exc.code} — will still try to synthesise)")
     return dict(VOICES)
 
 
