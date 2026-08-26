@@ -159,6 +159,15 @@ def call_claude(client, prompt: str):
                 use_fallback = False
                 continue
             raise
+        except anthropic.APIStatusError as exc:
+            # Billing problems are the common one and deserve a plain sentence
+            # rather than a traceback in a CI log nobody wants to read.
+            if "credit balance" in str(exc) or "billing" in str(exc).lower():
+                sys.exit("The Anthropic API account is out of credit. Top it up "
+                         "at console.anthropic.com -> Plans & Billing. This is "
+                         "separate from the Claude subscription and from "
+                         "ElevenLabs.")
+            raise
 
         if message.stop_reason == "refusal":
             sys.exit(f"request refused: {message.stop_details}")
