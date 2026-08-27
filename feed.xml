@@ -27,6 +27,59 @@
       <itunes:category text="Investing"/>
     </itunes:category>
     <item>
+      <title>Ep. 05 — Banks Want Their Own Stablecoins, Saudi Factories Want Fintech Credit</title>
+      <description>JPMorgan is weighing its own stablecoin and more than a dozen banks are advancing a commercial one, while three thousand smaller US banks line up behind the BankChain Alliance — and Circle and Coinbase shares slid on the news. In Riyadh, fintech financing to industrial projects hit a record 541 million riyals in the first half, up 130 percent. Plus a full walkthrough of Fireblocks: MPC key shares, policy engines, whitelists, and why controls move before the transaction on irreversible rails.</description>
+      <itunes:summary>JPMorgan is weighing its own stablecoin and more than a dozen banks are advancing a commercial one, while three thousand smaller US banks line up behind the BankChain Alliance — and Circle and Coinbase shares slid on the news. In Riyadh, fintech financing to industrial projects hit a record 541 million riyals in the first half, up 130 percent. Plus a full walkthrough of Fireblocks: MPC key shares, policy engines, whitelists, and why controls move before the transaction on irreversible rails.</itunes:summary>
+      <content:encoded><![CDATA[# Banks Want Their Own Stablecoins, Saudi Factories Want Fintech Credit
+**Fintech Pulse Daily — Episode 05, Thursday 27 August 2026 (Riyadh)**
+
+## Saudi Arabia
+- **Fintech lending to industry hits a record.** The Ministry of Industry and Mineral Resources reported that financing from Saudi fintech companies to industrial projects rose **130% in H1 2026 to SR541m (about $144m)**, up from SR234m in the same half of 2025. The half-year figure is already **about 70% of the whole of last year**. For context, 2025 full-year fintech-partnership lending was SR774m ($206.4m), itself up 36% on 2024.
+- **Why a product manager should care:** this is receivables and purchase-order underwriting, not balance-sheet underwriting — the population is manufacturing SMEs that banks are slow to write facilities for.
+- **Also this morning:** Saudi contractors secured **more than $2.6bn (just under SR10bn)** of projects in July; the Arab Monetary Fund reported Arab stock trading **volume up 29% in July while value traded fell**.
+
+## Global
+- **JPMorgan weighing a stablecoin** (WSJ, Wed 26 Aug) — preliminary, no product under development. It would sit alongside its existing tokenised deposit product. A **consortium of more than a dozen banks** (Bank of America, Wells Fargo, Santander among them) is advancing a **commercial stablecoin** in dollars, euros and other currencies.
+- **BankChain Alliance** (announced Tue 25 Aug): an industry-owned blockchain network built around the Federal Home Loan Bank system — **~3,283 institutions, $21.8trn in assets (~SR82trn)** — supporting tokenised deposits, stablecoins and automated settlement, targeting **H1 2027**, interoperable with other chains.
+- **Market reaction:** Circle and Coinbase shares slid Wednesday on the bank-competition read-through, with the **CLARITY Act** still in play — an earlier 2026 draft would have banned rewards on passive stablecoin balances, the trigger for Circle's worst day on record in March.
+- **Separate effort:** Open USD, announced in June with 140+ members including Visa, Stripe, Mastercard, BlackRock, Coinbase and Google.
+- **Europe:** the ECB published a speech on 26 August on moving from vision to delivery on a tokenised financial market.
+- **Crypto context:** bitcoin slipped under $80,000 on Wednesday and traded around $79,000 Thursday morning.
+
+## Product spotlight — Fireblocks
+Digital-asset infrastructure for institutions: key management, transfer controls, a counterparty network and tooling for token issuance and stablecoin payouts.
+- **Problem:** a private key is a bearer instrument; transfers are final; there is no chargeback and no Sunday-morning reversal.
+- **Mechanism:** MPC — the key exists only as shares on separate devices held by different parties, signing jointly, never assembled in one place.
+- **Flow:** workspace → vault accounts (per client / desk / purpose) → policy engine (asset, amount, destination, thresholds, named approvers) → co-signer approval on a separate device → whitelists and named counterparties → analytics screening on outbound → settlement, reporting and reconciliation.
+- **Money:** subscription tiered by activity and volume, usage charges, add-on modules.
+- **Limits:** it is technology, not a licence; single-provider uptime and chain-coverage concentration; a bad policy executes perfectly.
+- **Competitors:** BitGo, Copper, Anchorage, Taurus, Zodia, Coinbase institutional, Ripple/Metaco, plus in-house HSM builds.
+- **Lesson:** on irreversible rails, controls move to before the transaction. Measure time-to-add-a-counterparty and second-signature latency — slow approvals create workarounds.
+
+## Watch tomorrow
+- Whether any bank in the consortium attaches a name and a date to its coin.
+- Whether the Ministry of Industry names the fintech platforms behind the SR541m.
+
+## Sources
+- Arab News — Saudi fintech lending to industrial projects jumps 130% in H1: https://www.arabnews.com/node/2656003/business-economy
+- Arab News — Saudi industry lending through fintech partnerships in 2025 (background): https://www.arabnews.pk/node/2638550/business-economy
+- Arab News — Saudi contractors secure more than $2.6bn in projects in July: https://www.arabnews.com/node/2656014/business-economy
+- Arab News — Arab stock trading volume jumps 29% in July as value falls (AMF): https://www.arabnews.com/node/2656010/business-economy
+- Yahoo Finance — JPMorgan Weighs Stablecoin as Bank Push Accelerates: https://finance.yahoo.com/markets/crypto/articles/jpmorgan-weighs-stablecoin-bank-push-155344255.html
+- Yahoo Finance — Circle, Coinbase Stocks Slide As US Banks Step Up Stablecoin Push Ahead Of CLARITY Act: https://finance.yahoo.com/markets/crypto/articles/circle-coinbase-stocks-slide-us-170942709.html
+- CoinDesk — Circle stock plunges as CLARITY Act draft threatens stablecoin rewards (March 2026 background): https://www.coindesk.com/markets/2026/03/24/circle-stock-plunges-18-as-a-new-draft-of-the-clarity-act-threatens-stablecoin-rewards
+- Banking Dive — JPMorgan Chase to launch deposit token (background on JPMD): https://www.bankingdive.com/news/jpmorgan-chase-to-launch-deposit-token/751083/
+- ECB — From vision to delivery: building Europe's tokenised financial market (26 Aug 2026): https://www.ecb.europa.eu/press/key/date/2026/html/ecb.sp260826~3641116314.hu.html
+- Rio Times — Crypto markets wrap, Thursday 27 August 2026: https://www.riotimesonline.com/crypto-markets-bitcoin-majors-thursday-august-27-2026/]]></content:encoded>
+      <pubDate>Thu, 27 Aug 2026 07:30:00 +0300</pubDate>
+      <enclosure url="https://sforaihey.github.io/fintech-pulse/episodes/fintech-pulse-ep05.mp3" length="6854992" type="audio/mpeg"/>
+      <guid isPermaLink="false">fintech-pulse-ep05</guid>
+      <itunes:duration>00:09:28</itunes:duration>
+      <itunes:episode>5</itunes:episode>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
       <title>Ep. 04 — A Regulator Changes Hands, Stablecoins Keep Working</title>
       <description>New leadership at Saudi Arabia's Capital Market Authority has foreign inflows back in the conversation, and Dana and Adam argue about whether a chairman actually moves anything. Then: SAMA's licensing drumbeat and Lean's Major Payment Institution permission, bitcoin slipping under eighty thousand dollars while stablecoins quietly do the work in Latin America, new AICPA accounting guidance, and a thin funding week carried by payments and AI. The product segment is Alloy — identity decisioning, and why corporate onboarding is a control system, not a connector.</description>
       <itunes:summary>New leadership at Saudi Arabia's Capital Market Authority has foreign inflows back in the conversation, and Dana and Adam argue about whether a chairman actually moves anything. Then: SAMA's licensing drumbeat and Lean's Major Payment Institution permission, bitcoin slipping under eighty thousand dollars while stablecoins quietly do the work in Latin America, new AICPA accounting guidance, and a thin funding week carried by payments and AI. The product segment is Alloy — identity decisioning, and why corporate onboarding is a control system, not a connector.</itunes:summary>
