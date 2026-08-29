@@ -19,7 +19,7 @@ meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
 if number not in meta:
     title = ep.get("title", "").strip()
     meta[number] = {
-        "title": f"Ep. {number} — {title}" if title else f"Ep. {number} — {date}",
+        "title": f"حلقة {number} — {title}" if title else f"حلقة {number} — {date}",
         "date": f"{date}T07:30:00+03:00",
         "summary": ep.get("summary", "").strip() or "Today's fintech briefing.",
         "notes": ep.get("notes", ""),

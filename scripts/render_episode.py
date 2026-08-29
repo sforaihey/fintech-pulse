@@ -33,9 +33,12 @@ API = "https://api.elevenlabs.io/v1"
 # Explicit voice ids, chosen by ear. Names in the library are ambiguous
 # (there is more than one "Eric"), so the id is the source of truth.
 VOICES = {
-    "DANA": "OZxMHsGaBmV5pjMIDIn0",
-    "ADAM": "UgBBYS2sOqTuMpoF3BR0",
+    "سلطان": "rUaPbzcZIu8df8iNL9WZ",
+    "فيصل": "wyC6KvCMTAXGbiCKlfSx",
 }
+# Declaring the language stops the model guessing from Latin-script technical
+# terms embedded in Arabic sentences.
+LANGUAGE = os.environ.get("FINTECH_LANGUAGE", "ar")
 MODEL_PREFERENCE = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5"]
 BITRATE = "96k"
 
@@ -114,7 +117,7 @@ def chunk_lines(lines, voices):
     """Group consecutive lines into blocks the dialogue endpoint can take."""
     blocks, current, size = [], [], 0
     for line in lines:
-        speaker = line["speaker"].upper()
+        speaker = line["speaker"].strip()
         if speaker not in voices:
             print(f"  ! unknown speaker {speaker!r}, skipping the line")
             continue
@@ -133,11 +136,11 @@ def chunk_lines(lines, voices):
 
 def speak_dialogue(inputs, model: str, key: str, dest: Path) -> None:
     """A whole exchange in one pass, so the voices respond to each other."""
-    body = json.dumps({
-        "inputs": inputs,
-        "model_id": model,
-        "settings": {"stability": STABILITY},
-    }).encode()
+    payload = {"inputs": inputs, "model_id": model,
+               "settings": {"stability": STABILITY}}
+    if LANGUAGE:
+        payload["language_code"] = LANGUAGE
+    body = json.dumps(payload).encode()
     request = urllib.request.Request(
         f"{API}/text-to-dialogue", data=body,
         headers={"xi-api-key": key, "Content-Type": "application/json",

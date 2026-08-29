@@ -18,9 +18,9 @@ ASSETS = Path(__file__).resolve().parent.parent / "assets"
 API = "https://api.elevenlabs.io/v1/music"
 
 # The show ident: a voice over the top of the opening music, so the intro is
-# not a bare instrumental. Spoken by Dana, for continuity with the show.
-IDENT_TEXT = os.environ.get("FINTECH_IDENT", "Fintech Pulse Daily.")
-IDENT_VOICE = "OZxMHsGaBmV5pjMIDIn0"
+# not a bare instrumental. Spoken by Sultan, so it matches the show.
+IDENT_TEXT = os.environ.get("FINTECH_IDENT", "فنتك بلس.")
+IDENT_VOICE = "rUaPbzcZIu8df8iNL9WZ"   # Sultan
 IDENT_DELAY_MS = 2200   # let the music establish before the voice lands
 MUSIC_UNDER = 0.62      # music level while the voice is over it
 

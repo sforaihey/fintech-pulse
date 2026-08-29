@@ -32,20 +32,18 @@ RIYADH = timezone(timedelta(hours=3))
 PUBLISH_HOUR = 7   # the cloud task runs ~07:30 Riyadh
 KEEP_LAST = 40    # rolling window of episodes kept in the feed
 ADOPT = os.environ.get("FINTECH_ADOPT") == "1"  # CI consumes incoming/
-DEFAULT_SUMMARY = ("Today's Saudi and global fintech news, plus a "
-                   "product explainer segment.")
+DEFAULT_SUMMARY = "أخبار الفنتك السعودية والعالمية، وشرح منتج."
 
 SHOW = {
-    "title": "Fintech Pulse Daily",
+    "title": "فنتك بلس",
     "author": "Sawsan Alforaihey",
     "email": "s.foraihey@gmail.com",
     "description": (
-        "A short daily briefing on payments, banking and fintech - what moved "
-        "overnight, why it matters, and what it means for the Gulf market. "
-        "Every episode also explains one fintech product in plain language. "
-        "Two hosts, about seven minutes, ready before the drive to work."
+        "نشرة يومية قصيرة عن المدفوعات والبنوك والفنتك — وش صار، وليه يهم، "
+        "ووش يعني للسوق السعودي والخليجي. وفي كل حلقة شرح لمنتج فنتك واحد "
+        "بلغة واضحة. مذيعان، عشر دقايق، جاهزة قبل طريق الدوام."
     ),
-    "language": "en",
+    "language": "ar",
     "category": "Business",
     "subcategory": "Investing",
 }

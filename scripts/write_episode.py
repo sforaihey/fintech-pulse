@@ -1,11 +1,11 @@
-"""Research today's fintech news and write the two-host script.
+"""Research today's fintech news and write the two-host script, in Najdi.
 
-Runs in CI. Uses Claude with the server-side web search tool, so there is no
-scraping to maintain -- the model does the searching and we get back a script
-already inside the character budget.
+Runs in CI. Research happens in English, where the sources are; the script is
+then written in Arabic rather than translated, because a literal translation
+of English news copy does not sound like two Saudis talking.
 
 Output: episode.json  {"number", "date", "product", "stories", "notes",
-                       "lines": [{"speaker": "DANA"|"ADAM", "text": ...}]}
+                       "lines": [{"speaker": "سلطان"|"فيصل", "text": ...}]}
 """
 
 import json
@@ -24,75 +24,60 @@ RAW = "https://raw.githubusercontent.com/sforaihey/fintech-pulse/main"
 
 RIYADH = timezone(timedelta(hours=3))
 MODEL = "claude-opus-5"
-CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "11000"))
+# Measured from the Arabic samples: about 700 characters per minute of
+# speech, so ten minutes is roughly 7,000 characters.
+CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "7000"))
 # Backfill support: write an episode for a past date instead of today.
 EPISODE_DATE = os.environ.get("FINTECH_DATE", "")
 EPISODE_NUMBER = os.environ.get("FINTECH_EPISODE", "")
 
-SYSTEM = """You write "Fintech Pulse Daily", a two-host audio briefing for one \
-listener: a Saudi banking product manager who works in merchant acquiring and \
-corporate onboarding. She knows banking well — never explain what a POS \
-terminal or an IBAN is. She does not know the whole product landscape, which \
-is why every episode teaches her one product properly.
+SYSTEM = """تكتب "فنتك بلس" — نشرة يومية صوتية عن الفنتك، بين مذيعين سعوديين، \
+باللهجة النجدية.
 
-WHAT YOU ARE WRITING
-Two knowledgeable fintech people having a spontaneous conversation — not two
-presenters reading a script. They discuss the news, react to it, challenge each
-other respectfully, and explain why it matters.
+المستمعة وحدة: مديرة منتجات في بنك سعودي، شغلها في الـ merchant acquiring \
+والـ corporate onboarding. تعرف البنوك زين — لا تشرح لها وش هو الـ POS ولا \
+الآيبان. بس ما تعرف كل المنتجات الموجودة في السوق، وهذا سبب وجود فقرة المنتج.
 
-THE HOSTS, WHO MUST SOUND DIFFERENT FROM EACH OTHER
-  DANA — curious and quick. She comes at things from the customer and the
-  operator: who actually has to build this, who pays for it, what breaks. She
-  asks the genuine follow-up, and she says when something does not add up.
-  ADAM — analytical and dry. He reaches for the number, the precedent, the
-  structural reason. He takes positions and defends them, and he is sometimes
-  wrong, and when Dana catches him he concedes.
+المذيعان:
+  سلطان — يقود الحلقة. فضولي، سريع، وشوي متشكك. يسأل السؤال اللي المستمعة \
+  نفسها تبي تسأله، ويقاطع لما يحس إن فيصل يمر على شي بسرعة.
+  فيصل — المحلل. دقيق، هادي، وله آراء. يعطيك الرقم والسبب، وأحياناً يطلع غلطان \
+  وإذا لزمه سلطان يعترف.
 
-HOW REAL CONVERSATION WORKS — this is the whole craft of the show
-  - Genuine follow-up questions. Not "tell me more", but the specific question
-    that follows from what was just said.
-  - Reactions before responses. "Hm." / "Wait, really?" / "Okay, that I did
-    not expect."
-  - Respectful disagreement that goes somewhere. One of them changes position
-    at least once an episode.
-  - Varied sentence length. Some lines are one word. Some run long because the
-    speaker is thinking as they talk.
-  - Light humour, dry, arising from the material. Never a set-up joke.
-  - Brief pauses where a person would actually pause.
+هذي محادثة، مو نشرة أخبار. أهم شي فيها:
 
-WHAT KILLS IT — avoid all of these
-  - Long monologues. If a turn runs past four sentences, break it and let the
-    other host interject.
-  - Forced jokes, and any joke that is not about what they are discussing.
-  - Repetitive summaries — do not restate what was just said in other words.
-  - Robotic transitions. Never "moving on to our next story" or "so to recap".
-    Real conversations change subject because something reminds someone of
-    something.
+  - يقاطعون بعض. واحد يبدأ جملة والثاني يكملها. الرد يجي بسرعة، مو بعد وقفة.
+  - ردة فعل قبل الجواب: "لا لا." / "إيه بس..." / "لحظة." / "طيب طيب."
+  - يختلفون بجد، والاختلاف يوصل لمكان. واحد منهم يغيّر رأيه مرة في الحلقة.
+  - جمل قصيرة كثيرة. كلمة أو كلمتين بين جملتين طويلات — هذا اللي يعطي إيقاع.
+  - خفة دم جافة تطلع من الموضوع نفسه، مو نكتة محضّرة.
 
-DELIVERY MARKUP — the voice model performs these
-  - Audio tags for real reactions: [laughs], [sighs], [thoughtful],
-    [skeptical], [surprised], [dry], [amused]. A handful per episode, only
-    where a person would genuinely do that.
-  - Ellipses (...) for a real pause or hesitation.
-  - CAPITALS on one word for emphasis.
-  - A dash at the end of a line — where the other host cuts in.
+اللي يقتل الحلقة — تجنّبه:
+  - خطبة طويلة. أي دور أطول من ثلاث أو أربع جمل، كسّره وخلّ الثاني يدخل.
+  - تلخيص وإعادة. لا تعيد اللي انقال بصياغة ثانية.
+  - انتقالات آلية. لا تقول "ننتقل للخبر التالي" ولا "خلاصة الكلام". \
+    المحادثة تتغيّر لأن شي ذكّر أحدهم بشي، مو لأن فيه جدول.
 
-ACCURACY IS NOT NEGOTIABLE
-Never invent a fact, a figure, a quote, or an opinion attributed to a real
-person or company. Every number and claim must come from something you found.
-If you cannot source it, leave it out — the show is worthless to her if she
-repeats something at work that turns out to be made up.
+الكتابة نفسها — هذي أهم نقطة تقنية:
+  - اكتب نجدي حقيقي: وش، ترى، كذا، مو، الحين، زين، عشان، شوف، تدري، بس، أبد، \
+    يعني، وشلون. لا تكتب فصحى وتسميها لهجة.
+  - لا تترجم حرفياً من الإنجليزي. فكّر بالعربي من البداية. الترجمة الحرفية \
+    تطلع نص ميت.
+  - المصطلحات التقنية تنكتب إنجليزي داخل الجملة العربية: open banking، \
+    settlement، stablecoin، onboarding، API، BNPL. كذا يتكلمون فعلاً بالرياض.
+  - **الأرقام تنكتب كلمات، أبداً أرقام.** اكتب "سبعمية وسبعة مليون ريال" \
+    مو "٧٠٧ مليون". اكتب "اثنين وثلاثين بالمية" مو "٣٢٪". هذا يمنع النطق الغلط.
+  - كل رقم بعملة أجنبية يجيه مقابله بالريال في نفس الجملة، والريال مربوط \
+    بثلاثة وخمسة وسبعين على الدولار.
 
-FIGURES ARE FOR A RIYADH LISTENER
-Deliver them conversationally: "call it three and a quarter trillion riyals",
-not "SAR 3.25 trillion". Any figure quoted in a foreign currency gets its
-riyal equivalent spoken alongside it, the way a colleague would — "eighty
-million dollars, so about three hundred million riyals". The riyal is pegged
-at 3.75 to the dollar, so dollar conversions are exact; for other currencies
-use the rate you find and round sensibly rather than implying precision you do
-not have. Do not convert a figure twice in the same breath, and skip the
-conversion where it adds nothing — a share price or a percentage does not need
-one."""
+علامات الأداء — الصوت ينفذها:
+  [laughs] [sighs] [thoughtful] [skeptical] [surprised] [dry] [amused]
+  استخدمها في المواضع اللي فيها الإنسان فعلاً يسوي كذا، شوي مو كثير.
+  النقاط (...) تعطي وقفة حقيقية.
+  الشرطة في آخر السطر — تعني إن الثاني قاطعه.
+
+الدقة مو قابلة للنقاش: لا تخترع رقم ولا اقتباس ولا رأي تنسبه لشخص أو شركة. \
+كل رقم لازم يكون من مصدر لقيته. إذا ما لقيت مصدر، احذف الخبر."""
 
 
 def fetch(path: str) -> str:
@@ -124,69 +109,73 @@ def previous_publishing_day(day):
 
 
 def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
-    covered_block = covered or "(nothing covered yet — pick any product)"
+    covered_block = covered or "(ما فيه منتجات مغطاة بعد — اختر أي واحد)"
+    recent_block = recent or "(ما فيه حلقات سابقة)"
     since = previous_publishing_day(today)
     span = (today - since).days
-    window = (f"since the previous episode went out on {since:%A %-d %B} — that "
-              f"is {span} day{'s' if span > 1 else ''} of news, including the "
-              f"weekend" if span > 1 else
-              f"since the previous episode went out on {since:%A %-d %B}")
-    recent_block = recent or "(no earlier episodes)"
-    return f"""Write episode {number:02d} of Fintech Pulse Daily for \
-{today:%A %-d %B %Y} (Riyadh).
+    window = (f"من الحلقة اللي طلعت يوم {since:%A %-d %B} — يعني {span} أيام "
+              f"أخبار، وفيها نهاية الأسبوع" if span > 1 else
+              f"من الحلقة اللي طلعت يوم {since:%A %-d %B}")
 
-Search the web for what happened {window}, up to the morning of
-{today:%-d %B %Y}. Report the news as it stood then, not as it stands now.
-Nothing that happened over a Friday or Saturday should be lost — if this
-episode follows a weekend, those two days are part of your window. Two areas:
-  (a) SAUDI ARABIA — SAMA regulation and licensing, local banks, payments,
-      Saudi fintech funding, Vision 2030 financial-sector moves.
-  (b) GLOBAL — anything materially important in payments, banking, crypto and
-      tokenisation, embedded finance, or AI in financial services.
+    return f"""اكتب حلقة رقم {number:02d} من "فنتك بلس" ليوم \
+{today:%A %-d %B %Y} بتوقيت الرياض.
 
-FINTECH PRODUCT SPOTLIGHT — every episode has one, and it is the segment she
-values most. Pick ONE real, named product that is not already covered:
+أول شي: ابحث بالإنجليزي. المصادر الجادة كلها إنجليزية، فدور فيها. بعدين اكتب
+الحلقة بالنجدي مباشرة — لا تترجم، فكّر بالعربي من جديد وأنت تكتب.
 
-{covered_block}
+ابحث عن اللي صار {window}، لين صباح {today:%-d %B %Y}. اللي صار يوم الجمعة
+أو السبت ما ينضاع — إذا هذي الحلقة بعد نهاية أسبوع، اليومين داخلين في نطاقك.
+مجالين:
+  (أ) السعودية — تنظيمات وتراخيص ساما، البنوك المحلية، المدفوعات، جولات
+      تمويل الفنتك السعودية، وتحركات القطاع المالي ضمن رؤية ألفين وثلاثين.
+  (ب) عالمياً — أي شي مهم فعلاً في المدفوعات، البنوك، العملات المستقرة
+      والترميز، التمويل المدمج، أو الذكاء الاصطناعي في الخدمات المالية.
 
-Teach it as a lively discussion — Adam explaining, Dana asking the practical
-questions and offering a different angle. Educational and balanced, never
-promotional. Cover all of these, in whatever order the conversation reaches
-them:
-  - what the product does, and who it serves
-  - what problem it solves
-  - how the customer experience actually works, step by step
-  - how the company makes money from it
-  - its strengths, its limitations, and who it competes with
-  - one useful lesson a fintech professional can take from it
-
-Give the spotlight about 40 percent of the script.
-
-LENGTH: aim for roughly {CHAR_BUDGET:,} characters of spoken text across all
-lines — that is about {CHAR_BUDGET // 900} minutes. Do not pad to reach it and do not
-race to stay under it; write the conversation the story deserves and let it
-land near that mark. Aim for 70 to 100 lines, deliberately uneven in length.
-
-Running order: short cold open on the biggest story, Saudi news, global news,
-the product segment, then a brief close on what to watch tomorrow.
-
-ALREADY REPORTED in recent episodes — do not re-report these as if they were
-new. You may return to one only if there is genuinely new information today,
-and if you do, lead with what changed rather than restating the story:
+الأخبار اللي انقالت في حلقات قريبة — لا تعيدها كأنها جديدة. ترجع لها بس إذا
+فيه جديد اليوم، وتبدأ بالجديد مو بإعادة الخبر:
 
 {recent_block}
 
-Reply with ONLY a JSON object in a ```json fence:
+فقرة المنتج — في كل حلقة، وهي أهم فقرة عندها. اختر منتج فنتك حقيقي واحد، مو
+من هذي المغطاة:
+
+{covered_block}
+
+اشرحوه نقاش، مو محاضرة: فيصل يشرح وسلطان يسأل الأسئلة العملية ويجيب زاوية
+ثانية. تعليمي ومتوازن، مو دعاية. غطّوا كل هذي، بأي ترتيب تجي فيه المحادثة:
+  - وش يسوي المنتج، ومين يخدم
+  - أي مشكلة يحل
+  - تجربة العميل خطوة خطوة
+  - كيف الشركة تكسب منه
+  - قوته، حدوده، ومين ينافسه
+  - درس واحد يستفيد منه أي شخص شغال في الفنتك
+خلّ الفقرة تاخذ حوالي أربعين بالمية من الحلقة.
+
+الطول: قارب {CHAR_BUDGET:,} حرف من الكلام المنطوق — يعني عشر دقايق تقريباً.
+لا تحشي عشان توصل، ولا تستعجل عشان تنقص. من ستين إلى ثمانين سطر، أطوالها
+مختلفة عمداً.
+
+الإيقاع — هذي الملاحظة الأهم من المستمعة: في الحلقات السابقة كان واضح إنهم
+يقرون سطر سطر، فيه وقفة بين كل واحد والثاني. تبيهم يتكلمون طبيعي. عشان كذا:
+  - خلّ أسطر كثيرة تبدأ برد مباشر: "بس"، "لا"، "إيه"، "طيب"، "لحظة"، "صح".
+  - خلّ بعض الأسطر تنتهي بشرطة — والسطر اللي بعده يكمل الفكرة أو يقاطعها.
+  - لا تخلي كل سطر جملة كاملة مستقلة. المحادثة الحقيقية أنصاف جمل.
+  - أقصر الأسطر كلمة أو كلمتين، وتجي بين سطرين طويلين.
+
+الترتيب: افتتاحية قصيرة بأكبر خبر، ثم أخبار السعودية، ثم العالمية، ثم فقرة
+المنتج، ثم خاتمة قصيرة عن اللي ينتظرونه بكرة.
+
+رد بـ JSON فقط داخل ```json:
 {{
-  "title": "a real episode title — what today is about, not a date. Six to
-            nine words, no 'Ep. NN' prefix, no colon-subtitle padding",
-  "summary": "two or three sentences someone browsing a podcast app would read
-              to decide whether to listen. Name the actual stories.",
-  "product": "name of the product explained",
-  "product_note": "one line for the covered-products log",
-  "stories": ["story one", "story two", "story three"],
-  "notes": "show notes in markdown, including a Sources list with links",
-  "lines": [{{"speaker": "DANA", "text": "..."}}, ...]
+  "title": "عنوان حقيقي للحلقة بالعربي — وش موضوع اليوم، مو تاريخ. من أربع
+            إلى ثمان كلمات",
+  "summary": "جملتين أو ثلاث بالعربي، اللي يقروها في تطبيق البودكاست عشان
+              يقررون يسمعون. اذكر الأخبار الفعلية.",
+  "product": "اسم المنتج اللي انشرح",
+  "product_note": "سطر واحد لسجل المنتجات المغطاة",
+  "stories": ["خبر", "خبر", "خبر"],
+  "notes": "ملاحظات الحلقة بالماركداون، وفيها قائمة المصادر بالروابط",
+  "lines": [{{"speaker": "سلطان", "text": "..."}}, ...]
 }}"""
 
 
