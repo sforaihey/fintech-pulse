@@ -4,19 +4,19 @@
      xmlns:atom="http://www.w3.org/2005/Atom"
      xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Fintech Pulse Daily</title>
+    <title>فنتك بلس</title>
     <link>https://sforaihey.github.io/fintech-pulse/</link>
     <atom:link href="https://sforaihey.github.io/fintech-pulse/feed.xml" rel="self" type="application/rss+xml"/>
-    <language>en</language>
-    <description>A short daily briefing on payments, banking and fintech - what moved overnight, why it matters, and what it means for the Gulf market. Every episode also explains one fintech product in plain language. Two hosts, about seven minutes, ready before the drive to work.</description>
-    <itunes:summary>A short daily briefing on payments, banking and fintech - what moved overnight, why it matters, and what it means for the Gulf market. Every episode also explains one fintech product in plain language. Two hosts, about seven minutes, ready before the drive to work.</itunes:summary>
+    <language>ar</language>
+    <description>نشرة يومية قصيرة عن المدفوعات والبنوك والفنتك — وش صار، وليه يهم، ووش يعني للسوق السعودي والخليجي. وفي كل حلقة شرح لمنتج فنتك واحد بلغة واضحة. مذيعان، عشر دقايق، جاهزة قبل طريق الدوام.</description>
+    <itunes:summary>نشرة يومية قصيرة عن المدفوعات والبنوك والفنتك — وش صار، وليه يهم، ووش يعني للسوق السعودي والخليجي. وفي كل حلقة شرح لمنتج فنتك واحد بلغة واضحة. مذيعان، عشر دقايق، جاهزة قبل طريق الدوام.</itunes:summary>
     <itunes:author>Sawsan Alforaihey</itunes:author>
     <itunes:type>episodic</itunes:type>
     <itunes:explicit>false</itunes:explicit>
     <itunes:image href="https://sforaihey.github.io/fintech-pulse/cover.jpg"/>
     <image>
       <url>https://sforaihey.github.io/fintech-pulse/cover.jpg</url>
-      <title>Fintech Pulse Daily</title>
+      <title>فنتك بلس</title>
       <link>https://sforaihey.github.io/fintech-pulse/</link>
     </image>
     <itunes:owner>
