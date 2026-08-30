@@ -100,6 +100,18 @@ def script_chars(lines) -> int:
     return sum(len(line["text"]) for line in lines)
 
 
+AR_DAYS = ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس",
+           "الجمعة", "السبت", "الأحد"]
+AR_MONTHS = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+             "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]
+
+
+def arabic_date(day, with_weekday: bool = True) -> str:
+    """Dates in Arabic, so nothing English leaks into the title or notes."""
+    stamp = f"{day.day} {AR_MONTHS[day.month - 1]} {day.year}"
+    return f"{AR_DAYS[day.weekday()]} {stamp}" if with_weekday else stamp
+
+
 def previous_publishing_day(day):
     """The last Sunday-to-Thursday day before `day`."""
     earlier = day - timedelta(days=1)
@@ -113,17 +125,17 @@ def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
     recent_block = recent or "(ما فيه حلقات سابقة)"
     since = previous_publishing_day(today)
     span = (today - since).days
-    window = (f"من الحلقة اللي طلعت يوم {since:%A %-d %B} — يعني {span} أيام "
+    window = (f"من الحلقة اللي طلعت يوم {arabic_date(since)} — يعني {span} أيام "
               f"أخبار، وفيها نهاية الأسبوع" if span > 1 else
-              f"من الحلقة اللي طلعت يوم {since:%A %-d %B}")
+              f"من الحلقة اللي طلعت يوم {arabic_date(since)}")
 
     return f"""اكتب حلقة رقم {number:02d} من "فنتك بلس" ليوم \
-{today:%A %-d %B %Y} بتوقيت الرياض.
+{arabic_date(today)} بتوقيت الرياض.
 
 أول شي: ابحث بالإنجليزي. المصادر الجادة كلها إنجليزية، فدور فيها. بعدين اكتب
 الحلقة بالنجدي مباشرة — لا تترجم، فكّر بالعربي من جديد وأنت تكتب.
 
-ابحث عن اللي صار {window}، لين صباح {today:%-d %B %Y}. اللي صار يوم الجمعة
+ابحث عن اللي صار {window}، لين صباح {arabic_date(today, False)}. اللي صار يوم الجمعة
 أو السبت ما ينضاع — إذا هذي الحلقة بعد نهاية أسبوع، اليومين داخلين في نطاقك.
 مجالين:
   (أ) السعودية — تنظيمات وتراخيص ساما، البنوك المحلية، المدفوعات، جولات
