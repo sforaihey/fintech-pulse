@@ -82,6 +82,19 @@ jobs:
           FINTECH_ADOPT: "1"
         run: python3 scripts/build_feed.py
 
+      # Keep the audio even if publishing fails: a lost push should never
+      # cost a rendered episode, which is expensive to remake.
+      - name: Keep a copy of the audio
+        if: steps.keys.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: episode-audio
+          path: |
+            incoming/*.mp3
+            episodes/*.mp3
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Publish
         if: steps.keys.outputs.ready == 'true'
         run: |
@@ -94,4 +107,13 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Episode published $(date -u '+%Y-%m-%d')"
-          git push
+          # Another commit can land while an episode renders, so rebase and
+          # retry rather than throwing the episode away.
+          for attempt in 1 2 3 4 5; do
+            if git push; then echo "pushed"; exit 0; fi
+            echo "push rejected, rebasing (attempt $attempt)"
+            git pull --rebase origin main || exit 1
+            sleep $((attempt * 5))
+          done
+          echo "could not push after 5 attempts"
+          exit 1
