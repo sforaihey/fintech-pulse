@@ -256,6 +256,19 @@ def main() -> None:
             print(f"{today:%A} — the show runs Sunday to Thursday. Nothing to do.")
             return
 
+    # GitHub's scheduler is best-effort: a firing can be hours late or skipped
+    # entirely, so the workflow fires several times a morning. Whichever one
+    # gets through first makes the episode; the rest find it already made.
+    if not EPISODE_NUMBER:
+        try:
+            made = json.loads(fetch("episodes.json"))
+            if any(e.get("date", "")[:10] == today.isoformat()
+                   for e in made.values()):
+                print(f"an episode for {today} already exists — nothing to do")
+                return
+        except Exception:                        # noqa: BLE001
+            pass
+
     number = int(EPISODE_NUMBER) if EPISODE_NUMBER else next_episode_number()
     covered = fetch("docs/products-covered.md")
     recent = fetch("docs/recent-stories.md")

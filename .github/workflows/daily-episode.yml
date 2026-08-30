@@ -6,8 +6,14 @@ name: Daily episode
 # trigger another workflow, so nothing may be left for a second one to do.
 
 on:
+  # GitHub runs scheduled workflows on a best-effort basis -- firings are
+  # routinely late and sometimes dropped. Four attempts across the morning,
+  # made safe by the "already exists" check in write_episode.py.
   schedule:
-    - cron: "15 4 * * 0-4"
+    - cron: "12 3 * * 0-4"   # 06:12 Riyadh
+    - cron: "17 4 * * 0-4"   # 07:17
+    - cron: "23 5 * * 0-4"   # 08:23
+    - cron: "31 7 * * 0-4"   # 10:31, last resort
   workflow_dispatch:
     inputs:
       char_budget:
