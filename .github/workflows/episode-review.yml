@@ -1,0 +1,64 @@
+name: Reviewed episode production
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Research draft or render the reviewed Episode 7 script
+        type: choice
+        options: [draft, render]
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-episode
+  cancel-in-progress: false
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Regression tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Dependencies
+        run: |
+          python -m pip install --quiet --upgrade anthropic
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Research Episode 7 without generating audio
+        if: inputs.stage == 'draft'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FINTECH_DATE: '2026-08-31'
+          FINTECH_EPISODE: '7'
+          FINTECH_CHAR_BUDGET: '6600'
+        run: python3 scripts/write_episode.py
+      - name: Render the reviewed script without publishing
+        if: inputs.stage == 'render'
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          test ! -f episodes/fintech-pulse-ep07.mp3
+          cp docs/drafts/ep07.json episode.json
+          python3 scripts/render_episode.py
+      - name: Preserve draft and audio for review, including partial results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: episode-review-${{ inputs.stage }}
+          include-hidden-files: true
+          path: |
+            episode.json
+            .render/
+            incoming/*.mp3
+            assets/intro.mp3
+            assets/ident-vo.mp3
+            assets/ident-signature.txt
+          retention-days: 7
+          if-no-files-found: warn
