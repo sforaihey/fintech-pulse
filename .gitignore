@@ -2,3 +2,6 @@
 *.pdf
 logs/
 __pycache__/
+.render/
+episode.json
+preview-output/

@@ -1,0 +1,46 @@
+name: Quality preview (never publishes)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-preview
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test without API calls
+        run: python3 -m unittest discover -s tests -v
+      - name: Install audio tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Render one review sample, including a block boundary
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          FINTECH_SCRIPT: docs/drafts/quality-preview.json
+          FINTECH_OUTPUT: preview-output
+          FINTECH_PREVIEW: '1'
+          FINTECH_BLOCK_CHARS: '900'
+        run: python3 scripts/render_episode.py
+      - name: Preserve preview and individual blocks even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-preview-${{ github.run_id }}
+          include-hidden-files: true
+          path: |
+            preview-output/*.mp3
+            .render/
+            assets/intro.mp3
+            assets/ident-vo.mp3
+          retention-days: 7
+          if-no-files-found: warn

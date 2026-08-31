@@ -19,7 +19,7 @@ on:
       char_budget:
         description: "Character budget for this episode"
         required: false
-        default: "7500"
+        default: "6600"
 
 permissions:
   contents: write
@@ -59,24 +59,27 @@ jobs:
           fi
 
       - name: Research and write the script
+        id: script
         if: steps.keys.outputs.ready == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          FINTECH_CHAR_BUDGET: ${{ inputs.char_budget || '7500' }}
-        run: python3 scripts/write_episode.py
+          FINTECH_CHAR_BUDGET: ${{ inputs.char_budget || '6600' }}
+        run: |
+          python3 scripts/write_episode.py
+          if [ -f episode.json ]; then echo 'ready=true' >> "$GITHUB_OUTPUT"; fi
 
       - name: Render the audio
-        if: steps.keys.outputs.ready == 'true'
+        if: steps.script.outputs.ready == 'true'
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: python3 scripts/render_episode.py
 
       - name: Log the product and the spend
-        if: steps.keys.outputs.ready == 'true'
+        if: steps.script.outputs.ready == 'true'
         run: python3 scripts/log_episode.py
 
       - name: Build the feed
-        if: steps.keys.outputs.ready == 'true'
+        if: steps.script.outputs.ready == 'true'
         env:
           FINTECH_SOURCE: incoming
           FINTECH_ADOPT: "1"
@@ -85,18 +88,21 @@ jobs:
       # Keep the audio even if publishing fails: a lost push should never
       # cost a rendered episode, which is expensive to remake.
       - name: Keep a copy of the audio
-        if: steps.keys.outputs.ready == 'true'
+        if: always() && steps.keys.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: episode-audio
+          include-hidden-files: true
           path: |
+            episode.json
+            .render/
             incoming/*.mp3
             episodes/*.mp3
           retention-days: 7
           if-no-files-found: ignore
 
       - name: Publish
-        if: steps.keys.outputs.ready == 'true'
+        if: steps.script.outputs.ready == 'true'
         run: |
           rm -f episode.json
           if [ -z "$(git status --porcelain)" ]; then

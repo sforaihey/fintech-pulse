@@ -16,7 +16,7 @@ on:
       char_budget:
         description: "Characters of spoken script"
         required: false
-        default: "11000"
+        default: "6600"
 
 permissions:
   contents: write
@@ -61,6 +61,20 @@ jobs:
           FINTECH_SOURCE: incoming
           FINTECH_ADOPT: "1"
         run: python3 scripts/build_feed.py
+
+      - name: Keep script and paid audio even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backfill-audio-${{ github.run_id }}
+          include-hidden-files: true
+          path: |
+            episode.json
+            .render/
+            incoming/*.mp3
+            episodes/*.mp3
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Publish
         run: |

@@ -1,14 +1,14 @@
 """Render episode.json to a single MP3 with ElevenLabs.
 
-Each line is rendered separately so the two hosts keep their own voices, then
-the pieces are joined with a short pause between turns. Voice ids and the
-model are looked up by name at runtime rather than hard-coded, so a renamed
-voice or a new model version does not silently break the show.
+Render conversational blocks with explicit voice IDs. Keep content-addressed
+audio blocks for selective repair; never silently omit a speaker or publish
+an episode outside the ten-minute duration range.
 
 Needs ELEVENLABS_API_KEY.
 """
 
 import json
+import hashlib
 import os
 import shutil
 import subprocess
@@ -16,17 +16,18 @@ import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
+from episode_quality import validate_lines, validate_duration
 
 REPO = Path(__file__).resolve().parent.parent
-EPISODE = REPO / "episode.json"
-INCOMING = REPO / "incoming"
+EPISODE = Path(os.environ.get("FINTECH_SCRIPT", str(REPO / "episode.json")))
+INCOMING = Path(os.environ.get("FINTECH_OUTPUT", str(REPO / "incoming")))
 ASSETS = REPO / "assets"
 WORK = REPO / ".render"
 # The music fades; the speech never does. acrossfade would fade BOTH sides,
 # which buries the first words of the episode under the intro.
 INTRO_FADE = 2.0     # music fades out over this long
-INTRO_OVERLAP = 1.1  # speech starts this early, at full volume, under the tail
-OUTRO_OVERLAP = 0.4  # outro begins just as the last word lands
+INTRO_OVERLAP = -0.15  # a clean gap after the ident/music, never mask first words
+OUTRO_OVERLAP = -0.15  # do not mask the final word either
 OUTRO_FADE_IN = 0.8
 
 API = "https://api.elevenlabs.io/v1"
@@ -39,17 +40,21 @@ VOICES = {
 # Declaring the language stops the model guessing from Latin-script technical
 # terms embedded in Arabic sentences.
 LANGUAGE = os.environ.get("FINTECH_LANGUAGE", "ar")
-MODEL_PREFERENCE = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5"]
+MODEL_PREFERENCE = ["eleven_v3"]
 BITRATE = "96k"
 
 # Text-to-dialogue renders a whole exchange in one pass, so the speakers react
 # to each other instead of each line being performed in isolation. The endpoint
 # is reliable up to about 2,000 characters, so long episodes go in chunks split
 # on speaker boundaries.
-DIALOGUE_CHARS = 1800
-# Lower stability = more expressive. ElevenLabs calls ~0.5 "Natural" and the
-# lower end "Creative"; conversation wants the expressive end.
-STABILITY = float(os.environ.get("FINTECH_STABILITY", "0.35"))
+DIALOGUE_CHARS = int(os.environ.get('FINTECH_BLOCK_CHARS', '1800'))
+if not 400 <= DIALOGUE_CHARS <= 2000:
+    raise ValueError('Dialogue block size must be between 400 and 2000 characters')
+# Natural, rather than Creative: expression belongs mainly in the writing.
+# This is a risk reduction, NOT a guarantee of regional accent consistency.
+STABILITY = float(os.environ.get("FINTECH_STABILITY", "0.5"))
+SEED = int(os.environ.get("FINTECH_SEED", "31"))
+ACCENT_CUE = "[strong Saudi accent] "
 
 
 def api_get(path: str, key: str):
@@ -98,13 +103,17 @@ def resolve_model(key: str) -> str:
     sys.exit(f"none of {MODEL_PREFERENCE} available; account has: {available}")
 
 
-def speak(text: str, voice_id: str, model: str, key: str, dest: Path) -> None:
+def speak(text: str, voice_id: str, model: str, key: str, dest: Path,
+          language: str | None = None) -> None:
     """Single line, one voice. Used by the audition page."""
-    body = json.dumps({
+    payload = {
         "text": text,
         "model_id": model,
         "voice_settings": {"stability": STABILITY, "similarity_boost": 0.8},
-    }).encode()
+    }
+    if language:
+        payload["language_code"] = language
+    body = json.dumps(payload).encode()
     request = urllib.request.Request(
         f"{API}/text-to-speech/{voice_id}", data=body,
         headers={"xi-api-key": key, "Content-Type": "application/json",
@@ -115,31 +124,49 @@ def speak(text: str, voice_id: str, model: str, key: str, dest: Path) -> None:
 
 def chunk_lines(lines, voices):
     """Group consecutive lines into blocks the dialogue endpoint can take."""
+    validate_lines(lines)
     blocks, current, size = [], [], 0
+    seen = set()
     for line in lines:
         speaker = line["speaker"].strip()
         if speaker not in voices:
-            print(f"  ! unknown speaker {speaker!r}, skipping the line")
-            continue
+            raise ValueError(f"Unknown speaker: {speaker}")
         text = line["text"].strip()
-        if not text:
-            continue
-        if current and size + len(text) > DIALOGUE_CHARS:
+        if len(text) + len(ACCENT_CUE) > DIALOGUE_CHARS:
+            raise ValueError('Turn exceeds dialogue block limit; edit the script first')
+        cue = ACCENT_CUE if speaker not in seen and LANGUAGE == 'ar' else ''
+        if current and size + len(text) + len(cue) > DIALOGUE_CHARS:
             blocks.append(current)
             current, size = [], 0
+            seen = set()
+            cue = ACCENT_CUE if LANGUAGE == 'ar' else ''
+        text = cue + text
         current.append({"text": text, "voice_id": voices[speaker]})
+        seen.add(speaker)
         size += len(text)
     if current:
         blocks.append(current)
     return blocks
 
 
-def speak_dialogue(inputs, model: str, key: str, dest: Path) -> None:
-    """A whole exchange in one pass, so the voices respond to each other."""
+def dialogue_payload(inputs, model):
+    if model != 'eleven_v3':
+        raise ValueError('Dialogue requires the tested eleven_v3 pipeline; no silent fallback')
     payload = {"inputs": inputs, "model_id": model,
-               "settings": {"stability": STABILITY}}
+               "settings": {"stability": STABILITY}, "seed": SEED}
     if LANGUAGE:
         payload["language_code"] = LANGUAGE
+    return payload
+
+
+def request_digest(payload):
+    return hashlib.sha256(json.dumps(payload, ensure_ascii=False,
+                                    sort_keys=True).encode()).hexdigest()[:24]
+
+
+def speak_dialogue(inputs, model: str, key: str, dest: Path) -> None:
+    """A whole exchange in one pass, so the voices respond to each other."""
+    payload = dialogue_payload(inputs, model)
     body = json.dumps(payload).encode()
     request = urllib.request.Request(
         f"{API}/text-to-dialogue", data=body,
@@ -196,7 +223,8 @@ def dress(body: Path, out: Path) -> None:
         mixes.append("[o]")
 
     filters.append(f"{''.join(mixes)}amix=inputs={len(mixes)}:"
-                   f"duration=longest:dropout_transition=0:normalize=0[a]")
+                   f"duration=longest:dropout_transition=0:normalize=0,"
+                   f"alimiter=limit=0.89:level=0:latency=1[a]")
     args += ["-filter_complex", ";".join(filters), "-map", "[a]",
              "-c:a", "libmp3lame", "-b:a", BITRATE, str(out)]
     subprocess.run(args, check=True)
@@ -214,12 +242,15 @@ def main() -> None:
 
     episode = json.loads(EPISODE.read_text())
     lines = episode["lines"]
+    validate_lines(lines)
+    episode['characters'] = sum(len(line['text']) for line in lines)
     print(f"rendering episode {episode['number']:02d}: {len(lines)} lines, "
           f"{episode['characters']:,} characters")
 
     WORK.mkdir(exist_ok=True)
-    for stale in WORK.iterdir():
-        stale.unlink()
+    # Keep script and request settings alongside reusable blocks. Never erase
+    # successful paid generations when a later block or publication fails.
+    (WORK / 'script.json').write_text(json.dumps(episode, ensure_ascii=False, indent=2))
 
     voices = resolve_voices(key)
     model = resolve_model(key)
@@ -229,9 +260,15 @@ def main() -> None:
 
     pieces = []
     for index, inputs in enumerate(blocks):
-        part = WORK / f"{index:03d}.mp3"
+        payload = dialogue_payload(inputs, model)
+        part = WORK / f"{request_digest(payload)}.mp3"
         try:
-            speak_dialogue(inputs, model, key, part)
+            if part.exists() and audio_seconds(part) > 0:
+                print(f"  reusing cached block {index + 1}")
+            else:
+                speak_dialogue(inputs, model, key, part)
+                audio_seconds(part)  # fail before caching an invalid response
+            part.with_suffix('.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:400]
             sys.exit(f"ElevenLabs error {exc.code} on block {index}: {detail}")
@@ -253,20 +290,26 @@ def main() -> None:
          str(body.resolve())],
         check=True, cwd=WORK)
 
-    INCOMING.mkdir(exist_ok=True)
-    out = INCOMING / f"Fintech Pulse Daily Ep. {episode['number']:02d}.mp3"
-    dress(body, out)
+    from make_intro import ensure_ident
+    ensure_ident(key)
+    INCOMING.mkdir(parents=True, exist_ok=True)
+    preview = os.environ.get('FINTECH_PREVIEW') == '1'
+    out = INCOMING / ('quality-preview.mp3' if preview else
+                      f"Fintech Pulse Daily Ep. {episode['number']:02d}.mp3")
+    candidate = WORK / "finished.mp3"
+    dress(body, candidate)
 
     seconds = float(subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-         "-of", "default=noprint_wrappers=1:nokey=1", str(out)],
+         "-of", "default=noprint_wrappers=1:nokey=1", str(candidate)],
         check=True, capture_output=True, text=True).stdout)
+    if not preview:
+        validate_duration(seconds)
+    shutil.copyfile(candidate, out)
     print(f"  wrote {out.name} — {int(seconds)//60}:{int(seconds)%60:02d}, "
           f"{out.stat().st_size/1e6:.1f} MB")
 
-    for leftover in WORK.iterdir():
-        leftover.unlink()
-    WORK.rmdir()
+    print('  script, request settings and audio blocks retained in .render/')
 
 
 if __name__ == "__main__":

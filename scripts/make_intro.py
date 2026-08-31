@@ -18,9 +18,9 @@ ASSETS = Path(__file__).resolve().parent.parent / "assets"
 API = "https://api.elevenlabs.io/v1/music"
 
 # The show ident: a voice over the top of the opening music, so the intro is
-# not a bare instrumental. Spoken by Sultan, so it matches the show.
-IDENT_TEXT = os.environ.get("FINTECH_IDENT", "فنتك بلس.")
-IDENT_VOICE = "rUaPbzcZIu8df8iNL9WZ"   # Sultan
+# not a bare instrumental. Faisal speaks the ENGLISH brand, never "Plus".
+IDENT_TEXT = os.environ.get("FINTECH_IDENT", "Fintech Pulse.")
+IDENT_VOICE = "wyC6KvCMTAXGbiCKlfSx"   # Faisal
 IDENT_DELAY_MS = 2200   # let the music establish before the voice lands
 MUSIC_UNDER = 0.62      # music level while the voice is over it
 
@@ -73,7 +73,7 @@ def build_ident(key: str) -> None:
     from render_episode import resolve_model, speak
 
     voice = ASSETS / "ident-vo.mp3"
-    speak(IDENT_TEXT, IDENT_VOICE, resolve_model(key), key, voice)
+    speak(IDENT_TEXT, IDENT_VOICE, resolve_model(key), key, voice, language="en")
     print(f"  ident: \"{IDENT_TEXT}\"")
 
     music, out = ASSETS / "intro-music.mp3", ASSETS / "intro.mp3"
@@ -90,6 +90,22 @@ def build_ident(key: str) -> None:
          "-map", "[a]", "-c:a", "libmp3lame", "-b:a", "192k", str(out)],
         check=True)
     print(f"  intro: music + voice -> {out.relative_to(ASSETS.parent)}")
+
+
+def ensure_ident(key: str, force: bool = False) -> None:
+    """Update the spoken ident once; reuse music and skip unchanged requests."""
+    from render_episode import STABILITY, request_digest
+    signature = request_digest({'text': IDENT_TEXT, 'voice': IDENT_VOICE,
+                                'language': 'en', 'stability': STABILITY,
+                                'model': 'eleven_v3', 'mix_version': 1})
+    stamp = ASSETS / 'ident-signature.txt'
+    if (not force and stamp.exists() and stamp.read_text() == signature
+            and (ASSETS / 'intro.mp3').exists()):
+        return
+    if not (ASSETS / 'intro-music.mp3').exists():
+        raise ValueError('Missing existing intro music; refusing to buy new music implicitly')
+    build_ident(key)
+    stamp.write_text(signature)
 
 
 def main() -> None:
@@ -110,7 +126,7 @@ def main() -> None:
                          f"'Music Generation' permission.\n{detail}")
             sys.exit(f"HTTP {exc.code}: {detail}")
 
-    build_ident(key)
+    ensure_ident(key, force='--force' in sys.argv)
     print("\nDone. Commit assets/ — episodes use these from now on.")
 
 

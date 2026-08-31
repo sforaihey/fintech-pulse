@@ -1,8 +1,7 @@
 """Research today's fintech news and write the two-host script, in Najdi.
 
-Runs in CI. Research happens in English, where the sources are; the script is
-then written in Arabic rather than translated, because a literal translation
-of English news copy does not sound like two Saudis talking.
+Runs in CI. Research uses authoritative Arabic and English sources; the script
+is then composed in accessible Saudi Arabic using the editorial policy.
 
 Output: episode.json  {"number", "date", "product", "stories", "notes",
                        "lines": [{"speaker": "سلطان"|"فيصل", "text": ...}]}
@@ -16,68 +15,20 @@ import urllib.request
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-import anthropic
-
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "episode.json"
 RAW = "https://raw.githubusercontent.com/sforaihey/fintech-pulse/main"
 
 RIYADH = timezone(timedelta(hours=3))
 MODEL = "claude-opus-5"
-# Measured from the Arabic samples: about 700 characters per minute of
-# speech, so ten minutes is roughly 7,000 characters.
-CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "7000"))
+# Starting estimate calibrated from Ep. 06, not a duration guarantee.
+# The renderer measures the final file, including the theme.
+CHAR_BUDGET = int(os.environ.get("FINTECH_CHAR_BUDGET", "6600"))
 # Backfill support: write an episode for a past date instead of today.
 EPISODE_DATE = os.environ.get("FINTECH_DATE", "")
 EPISODE_NUMBER = os.environ.get("FINTECH_EPISODE", "")
 
-SYSTEM = """تكتب "فنتك بلس" — نشرة يومية صوتية عن الفنتك، بين مذيعين سعوديين، \
-باللهجة النجدية.
-
-المستمعة وحدة: مديرة منتجات في بنك سعودي، شغلها في الـ merchant acquiring \
-والـ corporate onboarding. تعرف البنوك زين — لا تشرح لها وش هو الـ POS ولا \
-الآيبان. بس ما تعرف كل المنتجات الموجودة في السوق، وهذا سبب وجود فقرة المنتج.
-
-المذيعان:
-  سلطان — يقود الحلقة. فضولي، سريع، وشوي متشكك. يسأل السؤال اللي المستمعة \
-  نفسها تبي تسأله، ويقاطع لما يحس إن فيصل يمر على شي بسرعة.
-  فيصل — المحلل. دقيق، هادي، وله آراء. يعطيك الرقم والسبب، وأحياناً يطلع غلطان \
-  وإذا لزمه سلطان يعترف.
-
-هذي محادثة، مو نشرة أخبار. أهم شي فيها:
-
-  - يقاطعون بعض. واحد يبدأ جملة والثاني يكملها. الرد يجي بسرعة، مو بعد وقفة.
-  - ردة فعل قبل الجواب: "لا لا." / "إيه بس..." / "لحظة." / "طيب طيب."
-  - يختلفون بجد، والاختلاف يوصل لمكان. واحد منهم يغيّر رأيه مرة في الحلقة.
-  - جمل قصيرة كثيرة. كلمة أو كلمتين بين جملتين طويلات — هذا اللي يعطي إيقاع.
-  - خفة دم جافة تطلع من الموضوع نفسه، مو نكتة محضّرة.
-
-اللي يقتل الحلقة — تجنّبه:
-  - خطبة طويلة. أي دور أطول من ثلاث أو أربع جمل، كسّره وخلّ الثاني يدخل.
-  - تلخيص وإعادة. لا تعيد اللي انقال بصياغة ثانية.
-  - انتقالات آلية. لا تقول "ننتقل للخبر التالي" ولا "خلاصة الكلام". \
-    المحادثة تتغيّر لأن شي ذكّر أحدهم بشي، مو لأن فيه جدول.
-
-الكتابة نفسها — هذي أهم نقطة تقنية:
-  - اكتب نجدي حقيقي: وش، ترى، كذا، مو، الحين، زين، عشان، شوف، تدري، بس، أبد، \
-    يعني، وشلون. لا تكتب فصحى وتسميها لهجة.
-  - لا تترجم حرفياً من الإنجليزي. فكّر بالعربي من البداية. الترجمة الحرفية \
-    تطلع نص ميت.
-  - المصطلحات التقنية تنكتب إنجليزي داخل الجملة العربية: open banking، \
-    settlement، stablecoin، onboarding، API، BNPL. كذا يتكلمون فعلاً بالرياض.
-  - **الأرقام تنكتب كلمات، أبداً أرقام.** اكتب "سبعمية وسبعة مليون ريال" \
-    مو "٧٠٧ مليون". اكتب "اثنين وثلاثين بالمية" مو "٣٢٪". هذا يمنع النطق الغلط.
-  - كل رقم بعملة أجنبية يجيه مقابله بالريال في نفس الجملة، والريال مربوط \
-    بثلاثة وخمسة وسبعين على الدولار.
-
-علامات الأداء — الصوت ينفذها:
-  [laughs] [sighs] [thoughtful] [skeptical] [surprised] [dry] [amused]
-  استخدمها في المواضع اللي فيها الإنسان فعلاً يسوي كذا، شوي مو كثير.
-  النقاط (...) تعطي وقفة حقيقية.
-  الشرطة في آخر السطر — تعني إن الثاني قاطعه.
-
-الدقة مو قابلة للنقاش: لا تخترع رقم ولا اقتباس ولا رأي تنسبه لشخص أو شركة. \
-كل رقم لازم يكون من مصدر لقيته. إذا ما لقيت مصدر، احذف الخبر."""
+SYSTEM = (REPO / "scripts" / "editorial_policy.md").read_text()
 
 
 def fetch(path: str) -> str:
@@ -129,11 +80,11 @@ def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
               f"أخبار، وفيها نهاية الأسبوع" if span > 1 else
               f"من الحلقة اللي طلعت يوم {arabic_date(since)}")
 
-    return f"""اكتب حلقة رقم {number:02d} من "فنتك بلس" ليوم \
+    return f"""اكتب حلقة رقم {number:02d} من "Fintech Pulse" ليوم \
 {arabic_date(today)} بتوقيت الرياض.
 
-أول شي: ابحث بالإنجليزي. المصادر الجادة كلها إنجليزية، فدور فيها. بعدين اكتب
-الحلقة بالنجدي مباشرة — لا تترجم، فكّر بالعربي من جديد وأنت تكتب.
+ابحث في المصادر الأصلية بالعربية والإنجليزية، ثم جهّز الحقائق ومصادرها.
+اكتب بعدها بعربية سعودية واضحة ولمسة نجدية خفيفة وفق السياسة التحريرية.
 
 ابحث عن اللي صار {window}، لين صباح {arabic_date(today, False)}. اللي صار يوم الجمعة
 أو السبت ما ينضاع — إذا هذي الحلقة بعد نهاية أسبوع، اليومين داخلين في نطاقك.
@@ -148,7 +99,7 @@ def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
 
 {recent_block}
 
-فقرة المنتج — في كل حلقة، وهي أهم فقرة عندها. اختر منتج فنتك حقيقي واحد، مو
+فقرة المنتج — في كل حلقة، للجمهور العام المهتم بالفنتك. اختر منتجًا حقيقيًا، مو
 من هذي المغطاة:
 
 {covered_block}
@@ -164,18 +115,16 @@ def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
 خلّ الفقرة تاخذ حوالي أربعين بالمية من الحلقة.
 
 الطول: قارب {CHAR_BUDGET:,} حرف من الكلام المنطوق — يعني عشر دقايق تقريباً.
-لا تحشي عشان توصل، ولا تستعجل عشان تنقص. من ستين إلى ثمانين سطر، أطوالها
-مختلفة عمداً.
+لا تحشي عشان توصل، ولا تستعجل عشان تنقص. عدد الأدوار يتبع المعنى، لا العكس.
 
-الإيقاع — هذي الملاحظة الأهم من المستمعة: في الحلقات السابقة كان واضح إنهم
-يقرون سطر سطر، فيه وقفة بين كل واحد والثاني. تبيهم يتكلمون طبيعي. عشان كذا:
-  - خلّ أسطر كثيرة تبدأ برد مباشر: "بس"، "لا"، "إيه"، "طيب"، "لحظة"، "صح".
-  - خلّ بعض الأسطر تنتهي بشرطة — والسطر اللي بعده يكمل الفكرة أو يقاطعها.
-  - لا تخلي كل سطر جملة كاملة مستقلة. المحادثة الحقيقية أنصاف جمل.
-  - أقصر الأسطر كلمة أو كلمتين، وتجي بين سطرين طويلين.
+الإيقاع: ردود مترابطة وجمل مكتملة المعنى، بدون افتعال خلاف أو مقاطعة.
+لا تفرض عددًا من ردود الفعل. الأرقام المنطوقة كلمات فصيحة صحيحة نحويًا.
+اختر خبرين أو ثلاثة فقط، واربط النقاش بسؤال واضح من البداية إلى الخاتمة.
 
 الترتيب: افتتاحية قصيرة بأكبر خبر، ثم أخبار السعودية، ثم العالمية، ثم فقرة
-المنتج، ثم خاتمة قصيرة عن اللي ينتظرونه بكرة.
+المنتج، ثم خاتمة قصيرة تغلق سؤال البداية وتذكر ما نتابعه في يوم النشر القادم.
+في notes سجّل تاريخ النشر وتاريخ الحدث لكل خبر، وروابط المصادر المؤيدة
+لأرقام الأخبار وخصائص المنتج، وحسابات تحويل العملات. لا تكتف بقائمة روابط عامة.
 
 رد بـ JSON فقط داخل ```json:
 {{
@@ -193,6 +142,7 @@ def build_prompt(number: int, today, covered: str, recent: str = "") -> str:
 
 def call_claude(client, prompt: str):
     """One turn, resuming across pause_turn, with the fallback beta if allowed."""
+    import anthropic
     messages = [{"role": "user", "content": prompt}]
     tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 12}]
     kwargs = dict(model=MODEL, max_tokens=32000, system=SYSTEM,
@@ -244,6 +194,8 @@ def extract_json(message) -> dict:
 
 
 def main() -> None:
+    import anthropic
+    from episode_quality import validate_lines
     if not os.environ.get("ANTHROPIC_API_KEY"):
         sys.exit("ANTHROPIC_API_KEY is not set")
 
@@ -266,8 +218,8 @@ def main() -> None:
                    for e in made.values()):
                 print(f"an episode for {today} already exists — nothing to do")
                 return
-        except Exception:                        # noqa: BLE001
-            pass
+        except Exception as exc:
+            sys.exit(f"Cannot verify today's episode status; refusing duplicate spend: {exc}")
 
     number = int(EPISODE_NUMBER) if EPISODE_NUMBER else next_episode_number()
     covered = fetch("docs/products-covered.md")
@@ -277,19 +229,22 @@ def main() -> None:
     client = anthropic.Anthropic(timeout=900.0)
     message = call_claude(client, build_prompt(number, today, covered, recent))
     episode = extract_json(message)
+    draft = REPO / '.render' / 'writer-draft.json'
+    draft.parent.mkdir(exist_ok=True)
+    draft.write_text(json.dumps(episode, indent=2, ensure_ascii=False))
+    validate_lines(episode.get("lines"))
 
     used = script_chars(episode["lines"])
     print(f"  {len(episode['lines'])} lines, {used:,} characters "
           f"(budget {CHAR_BUDGET:,})")
 
-    # Only a runaway gets cut: trimming the tail costs the episode its ending,
-    # so tolerate overshoot and intervene only when the spend is unreasonable.
+    # Preserve the complete draft. Never amputate the ending to satisfy a budget.
     ceiling = int(CHAR_BUDGET * 1.3)
     if used > ceiling:
-        while episode["lines"] and script_chars(episode["lines"]) > ceiling:
-            episode["lines"].pop()
-        print(f"  over {ceiling:,} — trimmed to "
-              f"{script_chars(episode['lines']):,} characters")
+        draft = REPO / ".render" / "overlength-draft.json"
+        draft.parent.mkdir(exist_ok=True)
+        draft.write_text(json.dumps(episode, indent=2, ensure_ascii=False))
+        sys.exit(f"Draft exceeds {ceiling:,} characters; saved intact for editing: {draft}")
 
     episode.update(number=number, date=today.isoformat(),
                    characters=script_chars(episode["lines"]))
