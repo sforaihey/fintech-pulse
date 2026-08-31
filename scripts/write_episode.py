@@ -228,6 +228,10 @@ def main() -> None:
 
     client = anthropic.Anthropic(timeout=900.0)
     message = call_claude(client, build_prompt(number, today, covered, recent))
+    response_path = REPO / '.render' / 'writer-response.json'
+    response_path.parent.mkdir(exist_ok=True)
+    response_path.write_text(message.model_dump_json(indent=2))
+    print(f'  writer stop reason: {message.stop_reason}')
     episode = extract_json(message)
     draft = REPO / '.render' / 'writer-draft.json'
     draft.parent.mkdir(exist_ok=True)
