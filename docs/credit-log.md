@@ -13,3 +13,4 @@ ElevenLabs bills 1 credit per character, so script length is the bill.
 | 07 | 2026-08-31 | 6709 | — |
 | 08 | 2026-09-01 | 6601 | — |
 | 09 | 2026-09-02 | 6447 | — |
+| 10 | 2026-09-06 | 6882 | — |
